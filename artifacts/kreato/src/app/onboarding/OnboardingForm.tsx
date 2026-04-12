@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 const COUNTRIES = [
@@ -25,7 +24,6 @@ interface Props {
 }
 
 export default function OnboardingForm({ userId, defaultName }: Props) {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -96,8 +94,7 @@ export default function OnboardingForm({ userId, defaultName }: Props) {
       return;
     }
 
-    router.push("/dashboard");
-    router.refresh();
+    window.location.href = "/dashboard";
   }
 
   return (
