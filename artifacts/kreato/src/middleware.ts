@@ -12,26 +12,19 @@ function isSupabaseConfigured(): boolean {
   );
 }
 
-const PROTECTED_ROUTES = ["/dashboard", "/onboarding"];
 const AUTH_ROUTES = ["/login", "/signup"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const isProtected = PROTECTED_ROUTES.some((r) => pathname.startsWith(r));
-  const isAuth = AUTH_ROUTES.some((r) => pathname.startsWith(r));
-
+  // Pass through all static/protected routes — client components handle auth
   if (!isSupabaseConfigured()) {
-    if (isProtected) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/login";
-      return NextResponse.redirect(url);
-    }
     return NextResponse.next({ request });
   }
 
   let supabaseResponse = NextResponse.next({ request });
 
+  // Create server client to refresh the session token in cookies if present
   const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     cookies: {
       getAll() {
@@ -49,22 +42,21 @@ export async function middleware(request: NextRequest) {
     },
   });
 
+  // Refresh the session — this is the main job of the middleware
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (isProtected && !user) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
-  }
-
-  if (isAuth && user) {
+  // If user is logged in (session in cookies) and on an auth page, redirect to dashboard
+  const isAuthRoute = AUTH_ROUTES.some((r) => pathname.startsWith(r));
+  if (isAuthRoute && user) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);
   }
 
+  // Protected routes: pass through — the client component handles the redirect
+  // (localStorage-based sessions are checked client-side)
   return supabaseResponse;
 }
 

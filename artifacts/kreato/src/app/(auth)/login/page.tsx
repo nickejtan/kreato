@@ -1,24 +1,37 @@
 "use client";
 
 import Link from "next/link";
-import { useFormState, useFormStatus } from "react-dom";
-import { loginAction } from "./actions";
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="btn-primary w-full py-2.5 mt-1"
-    >
-      {pending ? "Logging in..." : "Log in"}
-    </button>
-  );
-}
+import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
-  const [state, formAction] = useFormState(loginAction, null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    const supabase = createClient();
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    console.log("[login] session:", data?.session ? "obtained" : "null");
+    console.log("[login] error:", error?.message ?? "none");
+
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+      return;
+    }
+
+    window.location.href = "/dashboard";
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-gray-50">
@@ -42,7 +55,7 @@ export default function LoginPage() {
             Log in to your Kreato account
           </p>
 
-          <form action={formAction} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label
                 htmlFor="email"
@@ -52,9 +65,10 @@ export default function LoginPage() {
               </label>
               <input
                 id="email"
-                name="email"
                 type="email"
                 placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 className="input-field"
               />
@@ -77,21 +91,28 @@ export default function LoginPage() {
               </div>
               <input
                 id="password"
-                name="password"
                 type="password"
                 placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 className="input-field"
               />
             </div>
 
-            {state?.error && (
+            {error && (
               <div className="rounded-lg bg-red-50 border border-red-100 px-3.5 py-3 text-sm text-red-600">
-                {state.error}
+                {error}
               </div>
             )}
 
-            <SubmitButton />
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary w-full py-2.5 mt-1"
+            >
+              {loading ? "Logging in..." : "Log in"}
+            </button>
           </form>
         </div>
 

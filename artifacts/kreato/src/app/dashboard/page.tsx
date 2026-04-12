@@ -1,6 +1,15 @@
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import LogoutButton from "@/components/LogoutButton";
+
+type Creator = {
+  full_name: string;
+  handle: string;
+  country: string;
+  product_type: string;
+};
 
 const STAT_CARDS = [
   { label: "Total Revenue", value: "$0.00", sub: "No payouts yet" },
@@ -9,30 +18,53 @@ const STAT_CARDS = [
   { label: "Payouts", value: "0", sub: "Pending: $0.00" },
 ];
 
-export default async function DashboardPage() {
-  const supabase = createClient();
+export default function DashboardPage() {
+  const [creator, setCreator] = useState<Creator | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  useEffect(() => {
+    async function load() {
+      const supabase = createClient();
 
-  console.log("[dashboard] user:", user?.id ?? "null");
-  console.log("[dashboard] authError:", authError?.message ?? "none");
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-  if (!user) {
-    redirect("/login");
+      if (!session) {
+        window.location.href = "/login";
+        return;
+      }
+
+      const { data: creatorData } = await supabase
+        .from("creators")
+        .select("full_name, handle, country, product_type")
+        .eq("id", session.user.id)
+        .single();
+
+      if (!creatorData) {
+        window.location.href = "/onboarding";
+        return;
+      }
+
+      setCreator(creatorData);
+      setLoading(false);
+    }
+
+    load();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-violet-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm text-gray-400">Loading your dashboard…</p>
+        </div>
+      </div>
+    );
   }
 
-  const { data: creator } = await supabase
-    .from("creators")
-    .select("full_name, handle, country, product_type")
-    .eq("id", user.id)
-    .single();
-
-  if (!creator) {
-    redirect("/onboarding");
-  }
+  if (!creator) return null;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -47,7 +79,6 @@ export default async function DashboardPage() {
               Kreato
             </span>
           </div>
-
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-400 hidden sm:block">
               @{creator.handle}
@@ -59,7 +90,6 @@ export default async function DashboardPage() {
 
       {/* Main content */}
       <main className="max-w-6xl mx-auto px-6 py-12">
-        {/* Welcome */}
         <div className="mb-10">
           <h1 className="text-2xl font-bold text-gray-900">
             Welcome back, {creator.full_name}

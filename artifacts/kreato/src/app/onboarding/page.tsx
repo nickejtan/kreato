@@ -1,30 +1,61 @@
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import OnboardingForm from "./OnboardingForm";
 
-export default async function OnboardingPage() {
-  const supabase = createClient();
+export default function OnboardingPage() {
+  const [userId, setUserId] = useState<string | null>(null);
+  const [defaultName, setDefaultName] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  useEffect(() => {
+    async function load() {
+      const supabase = createClient();
 
-  if (!user) {
-    redirect("/login");
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        window.location.href = "/login";
+        return;
+      }
+
+      // Check if creator profile already exists
+      const { data: creator } = await supabase
+        .from("creators")
+        .select("id")
+        .eq("id", session.user.id)
+        .single();
+
+      if (creator) {
+        window.location.href = "/dashboard";
+        return;
+      }
+
+      const name =
+        session.user.user_metadata?.full_name ||
+        session.user.email?.split("@")[0] ||
+        "";
+
+      setUserId(session.user.id);
+      setDefaultName(name);
+      setLoading(false);
+    }
+
+    load();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-violet-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
   }
 
-  const { data: creator } = await supabase
-    .from("creators")
-    .select("id")
-    .eq("id", user.id)
-    .single();
-
-  if (creator) {
-    redirect("/dashboard");
-  }
-
-  const defaultName =
-    user.user_metadata?.full_name || user.email?.split("@")[0] || "";
+  if (!userId) return null;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-16">
@@ -55,7 +86,7 @@ export default async function OnboardingPage() {
             Just a few details to get you started on Kreato.
           </p>
 
-          <OnboardingForm userId={user.id} defaultName={defaultName} />
+          <OnboardingForm userId={userId} defaultName={defaultName} />
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-6">
