@@ -2,8 +2,16 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import LogoutButton from "@/components/LogoutButton";
 
+const STAT_CARDS = [
+  { label: "Total Revenue", value: "$0.00", sub: "No payouts yet" },
+  { label: "Active Members", value: "0", sub: "Start growing" },
+  { label: "Products", value: "0", sub: "Create your first" },
+  { label: "Payouts", value: "0", sub: "Pending: $0.00" },
+];
+
 export default async function DashboardPage() {
   const supabase = createClient();
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -12,8 +20,15 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const displayName =
-    user.user_metadata?.full_name || user.email?.split("@")[0] || "Creator";
+  const { data: creator } = await supabase
+    .from("creators")
+    .select("full_name, handle, country, product_type")
+    .eq("id", user.id)
+    .single();
+
+  if (!creator) {
+    redirect("/onboarding");
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -30,8 +45,8 @@ export default async function DashboardPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-500 hidden sm:block">
-              {user.email}
+            <span className="text-sm text-gray-400 hidden sm:block">
+              @{creator.handle}
             </span>
             <LogoutButton />
           </div>
@@ -43,30 +58,28 @@ export default async function DashboardPage() {
         {/* Welcome */}
         <div className="mb-10">
           <h1 className="text-2xl font-bold text-gray-900">
-            Welcome back, {displayName}
+            Welcome back, {creator.full_name}
           </h1>
-          <p className="text-gray-500 mt-1">
-            Here&apos;s an overview of your creator dashboard.
+          <p className="text-gray-400 mt-1 text-sm">
+            {creator.product_type} · {creator.country}
           </p>
         </div>
 
         {/* Stats grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-          {[
-            { label: "Total earnings", value: "$0.00", change: "Get started" },
-            { label: "Subscribers", value: "0", change: "Build your audience" },
-            { label: "Content pieces", value: "0", change: "Publish something" },
-          ].map((stat) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {STAT_CARDS.map((stat) => (
             <div key={stat.label} className="card p-6">
-              <p className="text-sm text-gray-400 mb-1">{stat.label}</p>
+              <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">
+                {stat.label}
+              </p>
               <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-              <p className="text-xs text-violet-500 mt-1.5">{stat.change}</p>
+              <p className="text-xs text-gray-400 mt-1.5">{stat.sub}</p>
             </div>
           ))}
         </div>
 
         {/* Empty state */}
-        <div className="card p-12 flex flex-col items-center justify-center text-center">
+        <div className="card p-12 flex flex-col items-center justify-center text-center mt-6">
           <div className="w-14 h-14 bg-violet-50 rounded-2xl flex items-center justify-center mb-5">
             <svg
               className="w-7 h-7 text-violet-500"
@@ -83,14 +96,14 @@ export default async function DashboardPage() {
             </svg>
           </div>
           <h2 className="text-base font-semibold text-gray-900 mb-2">
-            Your dashboard is ready
+            Ready to earn
           </h2>
           <p className="text-sm text-gray-400 max-w-xs leading-relaxed">
-            This is where your earnings, subscribers, and content will appear.
-            Start building your creator business.
+            Your creator page is set up. Start building your first product to
+            see revenue here.
           </p>
           <button className="btn-primary mt-6 text-sm">
-            Create your first page
+            Create your first product
           </button>
         </div>
       </main>

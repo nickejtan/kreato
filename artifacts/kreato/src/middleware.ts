@@ -12,11 +12,17 @@ function isSupabaseConfigured(): boolean {
   );
 }
 
+const PROTECTED_ROUTES = ["/dashboard", "/onboarding"];
+const AUTH_ROUTES = ["/login", "/signup"];
+
 export async function middleware(request: NextRequest) {
-  const isProtectedRoute = request.nextUrl.pathname.startsWith("/dashboard");
+  const { pathname } = request.nextUrl;
+
+  const isProtected = PROTECTED_ROUTES.some((r) => pathname.startsWith(r));
+  const isAuth = AUTH_ROUTES.some((r) => pathname.startsWith(r));
 
   if (!isSupabaseConfigured()) {
-    if (isProtectedRoute) {
+    if (isProtected) {
       const url = request.nextUrl.clone();
       url.pathname = "/login";
       return NextResponse.redirect(url);
@@ -47,17 +53,13 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isAuthRoute =
-    request.nextUrl.pathname.startsWith("/login") ||
-    request.nextUrl.pathname.startsWith("/signup");
-
-  if (isProtectedRoute && !user) {
+  if (isProtected && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
-  if (isAuthRoute && user) {
+  if (isAuth && user) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);
