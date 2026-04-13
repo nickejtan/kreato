@@ -193,9 +193,12 @@ export default async function CreatorStorefront({ params }: Props) {
                     </div>
 
                     {/* CTA */}
-                    <button className="w-full py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors group-hover:shadow-md group-hover:shadow-violet-200">
+                    <Link
+                      href={`/checkout/${product.id}`}
+                      className="w-full py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors group-hover:shadow-md group-hover:shadow-violet-200 text-center block"
+                    >
                       Join now
-                    </button>
+                    </Link>
                   </div>
                 );
               })}

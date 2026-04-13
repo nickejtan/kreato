@@ -37,6 +37,7 @@ const TYPE_ICON: Record<string, string> = {
 export default function DashboardPage() {
   const [creator, setCreator] = useState<Creator | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
+  const [orderCount, setOrderCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -52,7 +53,11 @@ export default function DashboardPage() {
         return;
       }
 
-      const [{ data: creatorData }, { data: productData }] = await Promise.all([
+      const [
+        { data: creatorData },
+        { data: productData },
+        { count: orders },
+      ] = await Promise.all([
         supabase
           .from("creators")
           .select("full_name, handle, country, product_type")
@@ -63,6 +68,10 @@ export default function DashboardPage() {
           .select("id, name, product_type, price, billing_type, active, created_at")
           .eq("creator_id", session.user.id)
           .order("created_at", { ascending: false }),
+        supabase
+          .from("orders")
+          .select("id", { count: "exact", head: true })
+          .eq("creator_id", session.user.id),
       ]);
 
       if (!creatorData) {
@@ -72,6 +81,7 @@ export default function DashboardPage() {
 
       setCreator(creatorData);
       setProducts(productData ?? []);
+      setOrderCount(orders ?? 0);
       setLoading(false);
     }
 
@@ -93,7 +103,11 @@ export default function DashboardPage() {
 
   const statCards = [
     { label: "Total Revenue", value: "$0.00", sub: "No payouts yet" },
-    { label: "Active Members", value: "0", sub: "Start growing" },
+    {
+      label: "Active Members",
+      value: String(orderCount),
+      sub: orderCount === 0 ? "No orders yet" : orderCount === 1 ? "1 order" : `${orderCount} orders`,
+    },
     {
       label: "Products",
       value: String(products.length),
