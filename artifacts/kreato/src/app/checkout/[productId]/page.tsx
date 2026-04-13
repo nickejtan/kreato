@@ -112,9 +112,15 @@ export default function CheckoutPage({ params }: Props) {
 
     const cleanTelegram = form.buyer_telegram.trim().replace(/^@/, "");
 
-    const { data: orderData, error: insertError } = await supabase
+    // Generate the order ID client-side so we never need to SELECT the row back.
+    // Doing INSERT ... RETURNING with the anon key fails because the SELECT RLS
+    // policy (creators_view_own_orders) blocks unauthenticated reads.
+    const orderId = crypto.randomUUID();
+
+    const { error: insertError } = await supabase
       .from("orders")
       .insert({
+        id: orderId,
         product_id: product!.id,
         creator_id: product!.creator.id,
         buyer_name: form.buyer_name.trim(),
@@ -123,15 +129,16 @@ export default function CheckoutPage({ params }: Props) {
         buyer_telegram: cleanTelegram,
         amount: product!.price,
         status: "pending",
-      })
-      .select("id")
-      .single();
+      });
 
-    if (insertError || !orderData) {
-      setError(insertError?.message ?? "Failed to create order.");
+    if (insertError) {
+      console.error("[checkout] insert failed — code:", insertError.code, "message:", insertError.message, "details:", insertError.details);
+      setError(insertError.message);
       setSubmitting(false);
       return;
     }
+
+    console.log("[checkout] order inserted successfully, id:", orderId);
 
     // Call the server route to create the Telegram invite link.
     // The bot token is fetched server-side and never sent to the browser.
@@ -140,7 +147,7 @@ export default function CheckoutPage({ params }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          orderId: orderData.id,
+          orderId,
           productId: product!.id,
           buyerName: form.buyer_name.trim(),
           buyerTelegram: cleanTelegram,
