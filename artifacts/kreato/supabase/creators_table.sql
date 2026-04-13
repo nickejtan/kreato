@@ -16,7 +16,14 @@ CREATE TABLE IF NOT EXISTS public.creators (
 -- Enable Row Level Security
 ALTER TABLE public.creators ENABLE ROW LEVEL SECURITY;
 
--- Policy: authenticated users can read only their own record
+-- Policy: anyone (including logged-out visitors) can read public creator profiles
+-- Required for the public storefront at /[handle]
+CREATE POLICY "creators_select_public"
+  ON public.creators
+  FOR SELECT
+  USING (true);
+
+-- Policy: authenticated users can read only their own record (legacy — superseded above)
 CREATE POLICY "creators_select_own"
   ON public.creators
   FOR SELECT
