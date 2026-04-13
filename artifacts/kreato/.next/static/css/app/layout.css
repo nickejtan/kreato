@@ -779,8 +779,11 @@ html {
 .h-20{
   height: 5rem;
 }
-.h-4{
-  height: 1rem;
+.h-3{
+  height: 0.75rem;
+}
+.h-5{
+  height: 1.25rem;
 }
 .h-6{
   height: 1.5rem;
@@ -818,8 +821,8 @@ html {
 .w-20{
   width: 5rem;
 }
-.w-4{
-  width: 1rem;
+.w-3{
+  width: 0.75rem;
 }
 .w-6{
   width: 1.5rem;
@@ -835,6 +838,9 @@ html {
 }
 .w-full{
   width: 100%;
+}
+.w-px{
+  width: 1px;
 }
 .min-w-0{
   min-width: 0px;
@@ -919,11 +925,20 @@ html {
 .items-center{
   align-items: center;
 }
+.items-stretch{
+  align-items: stretch;
+}
 .justify-center{
   justify-content: center;
 }
 .justify-between{
   justify-content: space-between;
+}
+.gap-0\.5{
+  gap: 0.125rem;
+}
+.gap-1{
+  gap: 0.25rem;
 }
 .gap-1\.5{
   gap: 0.375rem;
@@ -1000,6 +1015,12 @@ html {
 }
 .border-b{
   border-bottom-width: 1px;
+}
+.border-l{
+  border-left-width: 1px;
+}
+.border-r{
+  border-right-width: 1px;
 }
 .border-t{
   border-top-width: 1px;
@@ -1132,6 +1153,10 @@ html {
   padding-left: 1.75rem;
   padding-right: 1.75rem;
 }
+.py-0{
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
 .py-1{
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
@@ -1190,11 +1215,17 @@ html {
 .pl-3\.5{
   padding-left: 0.875rem;
 }
+.pl-4{
+  padding-left: 1rem;
+}
 .pr-1{
   padding-right: 0.25rem;
 }
 .pr-3\.5{
   padding-right: 0.875rem;
+}
+.pr-8{
+  padding-right: 2rem;
 }
 .pt-10{
   padding-top: 2.5rem;
@@ -1358,6 +1389,9 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+.opacity-50{
+  opacity: 0.5;
+}
 .shadow-lg{
   --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
@@ -1419,6 +1453,11 @@ html {
   border-color: rgb(167 139 250 / var(--tw-border-opacity, 1));
 }
 
+.hover\:bg-gray-50:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1));
+}
+
 .hover\:bg-violet-700:hover{
   --tw-bg-opacity: 1;
   background-color: rgb(109 40 217 / var(--tw-bg-opacity, 1));
@@ -1477,8 +1516,8 @@ html {
 
 @media (min-width: 640px){
 
-  .sm\:block{
-    display: block;
+  .sm\:flex{
+    display: flex;
   }
 
   .sm\:grid-cols-2{

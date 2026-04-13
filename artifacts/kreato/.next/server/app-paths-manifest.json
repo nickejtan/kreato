@@ -1,4 +1,5 @@
 {
-  "/checkout/[productId]/page": "app/checkout/[productId]/page.js",
-  "/dashboard/page": "app/dashboard/page.js"
+  "/dashboard/page": "app/dashboard/page.js",
+  "/dashboard/products/new/page": "app/dashboard/products/new/page.js",
+  "/dashboard/settings/page": "app/dashboard/settings/page.js"
 }

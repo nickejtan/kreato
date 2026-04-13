@@ -1,8 +1,8 @@
-// File: /home/runner/workspace/artifacts/kreato/src/app/checkout/[productId]/page.tsx
-import * as entry from '../../../../../src/app/checkout/[productId]/page.js'
+// File: /home/runner/workspace/artifacts/kreato/src/app/dashboard/settings/page.tsx
+import * as entry from '../../../../../src/app/dashboard/settings/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
-type TEntry = typeof import('../../../../../src/app/checkout/[productId]/page.js')
+type TEntry = typeof import('../../../../../src/app/dashboard/settings/page.js')
 
 type SegmentParams<T extends Object = any> = T extends Record<string, any>
   ? { [K in keyof T]: T[K] extends string ? string | string[] | undefined : never }

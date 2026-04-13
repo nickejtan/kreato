@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import LogoutButton from "@/components/LogoutButton";
+import DashboardNav from "@/components/DashboardNav";
 
 type Creator = {
   full_name: string;
@@ -123,25 +123,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Top nav */}
-      <header className="bg-white border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">K</span>
-            </div>
-            <span className="font-bold text-gray-900 text-lg tracking-tight">
-              Kreato
-            </span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-400 hidden sm:block">
-              @{creator.handle}
-            </span>
-            <LogoutButton />
-          </div>
-        </div>
-      </header>
+      <DashboardNav handle={creator.handle} creatorName={creator.full_name} />
 
       {/* Main content */}
       <main className="max-w-6xl mx-auto px-6 py-12">
