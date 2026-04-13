@@ -782,6 +782,9 @@ html {
 .h-3{
   height: 0.75rem;
 }
+.h-4{
+  height: 1rem;
+}
 .h-5{
   height: 1.25rem;
 }
@@ -823,6 +826,9 @@ html {
 }
 .w-3{
   width: 0.75rem;
+}
+.w-4{
+  width: 1rem;
 }
 .w-6{
   width: 1.5rem;
@@ -1144,6 +1150,10 @@ html {
 .px-4{
   padding-left: 1rem;
   padding-right: 1rem;
+}
+.px-5{
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
 }
 .px-6{
   padding-left: 1.5rem;

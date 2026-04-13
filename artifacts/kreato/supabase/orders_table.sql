@@ -33,3 +33,11 @@ CREATE POLICY "creators_view_own_orders"
   ON orders
   FOR SELECT
   USING (creator_id = auth.uid());
+
+-- Allow the server to upgrade a pending order to paid/failed after Telegram processing.
+-- Only "pending" orders can be updated, and only to a terminal status.
+CREATE POLICY "system_update_pending_orders"
+  ON orders
+  FOR UPDATE
+  USING (status = 'pending')
+  WITH CHECK (status IN ('paid', 'failed'));

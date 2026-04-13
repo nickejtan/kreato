@@ -37,6 +37,7 @@ export default function CheckoutPage({ params }: Props) {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [inviteLink, setInviteLink] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const [form, setForm] = useState({
@@ -109,21 +110,49 @@ export default function CheckoutPage({ params }: Props) {
     setSubmitting(true);
     const supabase = createClient();
 
-    const { error: insertError } = await supabase.from("orders").insert({
-      product_id: product!.id,
-      creator_id: product!.creator.id,
-      buyer_name: form.buyer_name.trim(),
-      buyer_email: form.buyer_email.trim().toLowerCase(),
-      buyer_country: form.buyer_country,
-      buyer_telegram: form.buyer_telegram.trim().replace(/^@/, ""),
-      amount: product!.price,
-      status: "pending",
-    });
+    const cleanTelegram = form.buyer_telegram.trim().replace(/^@/, "");
 
-    if (insertError) {
-      setError(insertError.message);
+    const { data: orderData, error: insertError } = await supabase
+      .from("orders")
+      .insert({
+        product_id: product!.id,
+        creator_id: product!.creator.id,
+        buyer_name: form.buyer_name.trim(),
+        buyer_email: form.buyer_email.trim().toLowerCase(),
+        buyer_country: form.buyer_country,
+        buyer_telegram: cleanTelegram,
+        amount: product!.price,
+        status: "pending",
+      })
+      .select("id")
+      .single();
+
+    if (insertError || !orderData) {
+      setError(insertError?.message ?? "Failed to create order.");
       setSubmitting(false);
       return;
+    }
+
+    // Call the server route to create the Telegram invite link.
+    // The bot token is fetched server-side and never sent to the browser.
+    try {
+      const res = await fetch("/api/checkout/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: orderData.id,
+          productId: product!.id,
+          buyerName: form.buyer_name.trim(),
+          buyerTelegram: cleanTelegram,
+        }),
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        setInviteLink(json.inviteLink ?? null);
+      }
+    } catch {
+      // Non-fatal — order was saved, invite link just couldn't be generated
     }
 
     setSuccess(true);
@@ -181,13 +210,38 @@ export default function CheckoutPage({ params }: Props) {
         <h1 className="text-2xl font-bold text-gray-900 mb-3">
           You&apos;re in! 🎉
         </h1>
-        <p className="text-gray-500 text-sm max-w-xs leading-relaxed mb-2">
-          Payment processing — you&apos;ll receive a Telegram invite link shortly.
-        </p>
-        <p className="text-gray-400 text-xs max-w-xs mb-8">
-          Check your Telegram inbox from{" "}
-          <span className="font-medium text-gray-600">@{product.creator.handle}</span>.
-        </p>
+
+        {inviteLink ? (
+          <>
+            <p className="text-gray-500 text-sm max-w-xs leading-relaxed mb-5">
+              Your one-time invite link is ready. Click it to join the group.
+            </p>
+            <a
+              href={inviteLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm transition-colors mb-3"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+              </svg>
+              Join the Telegram group
+            </a>
+            <p className="text-gray-400 text-xs max-w-xs mb-8">
+              ⚠️ This link is valid for <strong>24 hours</strong> and can only be used once.
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="text-gray-500 text-sm max-w-xs leading-relaxed mb-2">
+              Your order is confirmed. The creator will send you a Telegram invite shortly.
+            </p>
+            <p className="text-gray-400 text-xs max-w-xs mb-8">
+              Check your Telegram from{" "}
+              <span className="font-medium text-gray-600">@{product.creator.handle}</span>.
+            </p>
+          </>
+        )}
 
         <div className="border border-gray-100 rounded-2xl p-5 max-w-xs w-full text-left mb-8">
           <p className="text-xs text-gray-400 mb-1">Order summary</p>
