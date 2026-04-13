@@ -6,25 +6,15 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/(auth)/login/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(auth)/login/page.js"
-    ],
-    "/dashboard/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/page.js"
-    ],
     "/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/page.js"
     ],
-    "/onboarding/page": [
+    "/dashboard/products/new/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/onboarding/page.js"
+      "static/chunks/app/dashboard/products/new/page.js"
     ]
   }
 }
