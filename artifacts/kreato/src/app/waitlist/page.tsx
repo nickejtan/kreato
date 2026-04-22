@@ -1,63 +1,46 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
-const SUBTITLES = [
-  "Stripe doesn't work in Malaysia or Singapore.",
-  "Western platforms take 10–30% of every sale.",
-  "Your buyers can't pay with DuitNow or PayNow.",
-  "Kajabi, Gumroad, Teachable — none built for SEA.",
-];
-
-const FEATURES = [
+const CREATOR_CARDS = [
   {
-    emoji: "💳",
-    title: "Local payment rails",
-    desc: "DuitNow, PayNow, GCash, GoPay, MoMo, PromptPay — payments your buyers actually use.",
+    emoji: "🍜",
+    title: "Food creators",
+    desc: "Teaching others how to create content, work with restaurants and charge their worth.",
   },
   {
-    emoji: "✦",
-    title: "Just 5% flat fee",
-    desc: "No monthly subscription. No per-seat pricing. You keep 95% of every sale.",
-    accentEmoji: true,
+    emoji: "💪",
+    title: "Fitness creators",
+    desc: "Selling weekly workout plans and coaching calls directly to their followers.",
   },
   {
-    emoji: "⚡",
-    title: "Auto Telegram & WhatsApp gating",
-    desc: "Buyer pays → instantly added to your group. Zero manual work, zero dropped members.",
+    emoji: "📸",
+    title: "Photography creators",
+    desc: "Teaching beginners how to shoot and edit on their phone.",
   },
   {
-    emoji: "📦",
-    title: "Sell anything",
-    desc: "Courses, coaching, paid communities, digital downloads — all under one roof.",
+    emoji: "💄",
+    title: "Beauty creators",
+    desc: "Running a paid Telegram group with exclusive tutorials and tips.",
+  },
+  {
+    emoji: "💰",
+    title: "Finance creators",
+    desc: "Charging followers for weekly market breakdowns and investment insights.",
+  },
+  {
+    emoji: "🎤",
+    title: "Lifestyle creators",
+    desc: "Selling 1-on-1 coaching on how to grow on Instagram and TikTok.",
   },
 ];
 
 export default function WaitlistPage() {
-  const [subtitleIdx, setSubtitleIdx] = useState(0);
-  const [fading, setFading] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFading(true);
-      timerRef.current = setTimeout(() => {
-        setSubtitleIdx((i) => (i + 1) % SUBTITLES.length);
-        setFading(false);
-      }, 280);
-    }, 2800);
-
-    return () => {
-      clearInterval(interval);
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, []);
-
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      {/* ── Nav (identical to homepage) ── */}
+      {/* ── Nav ── */}
       <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto w-full">
         <Link href="/" className="flex items-center gap-2">
           <div className="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center">
@@ -82,65 +65,56 @@ export default function WaitlistPage() {
         {/* Pill badge */}
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-50 border border-violet-100 text-violet-700 text-xs font-medium mb-8">
           <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
-          Joining the waitlist is free
+          Now live in Malaysia &amp; Singapore
         </div>
 
         {/* Headline */}
-        <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 leading-[1.1] tracking-tight max-w-3xl mb-5">
-          Sell your knowledge.{" "}
-          <span className="text-violet-600 whitespace-nowrap">Get paid in SEA.</span>
+        <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 leading-[1.1] tracking-tight max-w-4xl mb-5">
+          The New Way For Creators In{" "}
+          <span className="text-violet-600 whitespace-nowrap">Malaysia &amp; Singapore</span>{" "}
+          To Make Money From Their Followers
         </h1>
 
-        {/* Rotating subtitle */}
-        <div className="h-7 mb-10 flex items-center justify-center">
-          <p
-            className="text-lg text-gray-500 max-w-xl transition-opacity duration-200"
-            style={{ opacity: fading ? 0 : 1 }}
-          >
-            {SUBTITLES[subtitleIdx]}
+        {/* Subtitle */}
+        <div className="mb-10 flex items-center justify-center">
+          <p className="text-lg text-gray-500 max-w-xl">
+            Kreato gives SEA creators a simple way to earn directly from their
+            followers and get paid instantly.
           </p>
         </div>
 
         {/* Form */}
-        <WaitlistForm />
+        <WaitlistForm buttonText="Get Early Access" />
 
         {/* Social proof */}
         <p className="mt-5 text-sm text-gray-400">
           🇲🇾 🇸🇬 🇵🇭 🇮🇩&nbsp;&nbsp;
           <span className="font-medium text-gray-500">
-            847 creators already waiting
+            Creators across Southeast Asia are already on the list.
           </span>
         </p>
       </main>
 
-      {/* ── Features ── */}
+      {/* ── Creator cards section ── */}
       <section className="bg-gray-50 py-20 px-6 border-t border-gray-100">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 text-center mb-3 tracking-tight">
-            Kreato is built differently.
+            What creators are selling on Kreato
           </h2>
           <p className="text-gray-500 text-center mb-12 max-w-xl mx-auto text-lg">
-            Everything you need to monetise your audience in SEA — and nothing
-            you don&apos;t.
+            From food to finance — if you have followers, you can earn with
+            Kreato.
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {FEATURES.map((f) => (
-              <div key={f.title} className="card p-6">
-                <div
-                  className={`mb-3 ${
-                    f.accentEmoji
-                      ? "text-lg font-black text-violet-600"
-                      : "text-2xl"
-                  }`}
-                >
-                  {f.accentEmoji ? "5%" : f.emoji}
-                </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {CREATOR_CARDS.map((c) => (
+              <div key={c.title} className="card p-6">
+                <div className="text-2xl mb-3">{c.emoji}</div>
                 <h3 className="font-semibold text-gray-900 mb-1.5">
-                  {f.title}
+                  {c.title}
                 </h3>
                 <p className="text-sm text-gray-500 leading-relaxed">
-                  {f.desc}
+                  {c.desc}
                 </p>
               </div>
             ))}
@@ -148,7 +122,20 @@ export default function WaitlistPage() {
         </div>
       </section>
 
-      {/* ── Footer (identical to homepage) ── */}
+      {/* ── Bottom CTA ── */}
+      <section className="py-20 px-6 border-t border-gray-100">
+        <div className="max-w-xl mx-auto text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight mb-3">
+            Ready to make money from your followers?
+          </h2>
+          <p className="text-gray-500 text-lg mb-10">
+            Join thousands of SEA creators already on the waitlist.
+          </p>
+          <WaitlistForm buttonText="Get Early Access" />
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
       <footer className="px-6 py-6 border-t border-gray-100">
         <div className="max-w-6xl mx-auto flex items-center justify-between text-xs text-gray-400">
           <span>© {new Date().getFullYear()} Kreato. Built for SEA.</span>
@@ -172,8 +159,7 @@ export default function WaitlistPage() {
   );
 }
 
-function WaitlistForm() {
-  const [role, setRole] = useState<"creator" | "buyer">("creator");
+function WaitlistForm({ buttonText }: { buttonText: string }) {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
@@ -182,13 +168,12 @@ function WaitlistForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-
     setSubmitting(true);
-    const supabase = createClient();
 
+    const supabase = createClient();
     const { error: dbErr } = await supabase.from("waitlist").insert({
       email: email.trim().toLowerCase(),
-      role,
+      role: "creator",
     });
 
     if (dbErr) {
@@ -225,29 +210,10 @@ function WaitlistForm() {
       onSubmit={handleSubmit}
       className="w-full max-w-md mx-auto flex flex-col items-center gap-4"
     >
-      {/* Creator / Buyer toggle */}
-      <div className="flex rounded-lg border border-gray-200 bg-gray-50 p-1 w-fit">
-        {(["creator", "buyer"] as const).map((r) => (
-          <button
-            key={r}
-            type="button"
-            onClick={() => setRole(r)}
-            className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${
-              role === r
-                ? "bg-white text-gray-900 shadow-sm border border-gray-200"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            {r === "creator" ? "I'm a Creator" : "I'm a Buyer"}
-          </button>
-        ))}
-      </div>
-
-      {/* Email + button row */}
       <div className="flex flex-col sm:flex-row gap-2.5 w-full">
         <input
           type="email"
-          placeholder="your@email.com"
+          placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -258,13 +224,11 @@ function WaitlistForm() {
           disabled={submitting}
           className="btn-primary px-6 py-2.5 text-sm whitespace-nowrap"
         >
-          {submitting ? "Joining…" : "Join the waitlist →"}
+          {submitting ? "Joining…" : buttonText}
         </button>
       </div>
 
-      {error && (
-        <p className="text-red-500 text-xs">{error}</p>
-      )}
+      {error && <p className="text-red-500 text-xs">{error}</p>}
     </form>
   );
 }
