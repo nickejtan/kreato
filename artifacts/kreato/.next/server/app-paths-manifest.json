@@ -1,4 +1,5 @@
 {
   "/page": "app/page.js",
-  "/[handle]/page": "app/[handle]/page.js"
+  "/[handle]/page": "app/[handle]/page.js",
+  "/waitlist/page": "app/waitlist/page.js"
 }

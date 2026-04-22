@@ -20,6 +20,12 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/[handle]/page.js"
+    ],
+    "/waitlist/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/waitlist/page.css",
+      "static/chunks/app/waitlist/page.js"
     ]
   }
 }
