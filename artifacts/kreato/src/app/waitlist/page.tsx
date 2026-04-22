@@ -88,7 +88,7 @@ export default function WaitlistPage() {
         {/* Headline */}
         <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 leading-[1.1] tracking-tight max-w-3xl mb-5">
           Sell your knowledge.{" "}
-          <span className="text-violet-600">Get paid in SEA.</span>
+          <span className="text-violet-600 whitespace-nowrap">Get paid in SEA.</span>
         </h1>
 
         {/* Rotating subtitle */}
