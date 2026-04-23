@@ -1,0 +1,14 @@
+{
+  "/_not-found/page": "/_not-found",
+  "/api/checkout/complete/route": "/api/checkout/complete",
+  "/[handle]/page": "/[handle]",
+  "/checkout/[productId]/page": "/checkout/[productId]",
+  "/(auth)/login/page": "/login",
+  "/dashboard/products/new/page": "/dashboard/products/new",
+  "/dashboard/settings/page": "/dashboard/settings",
+  "/dashboard/page": "/dashboard",
+  "/onboarding/page": "/onboarding",
+  "/(auth)/signup/page": "/signup",
+  "/page": "/",
+  "/waitlist/page": "/waitlist"
+}

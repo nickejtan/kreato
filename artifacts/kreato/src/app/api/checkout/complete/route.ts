@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { sendTelegramInvite } from "@/lib/telegram";
+import type { PostgrestSingleResponse } from "@supabase/supabase-js";
+
+type ProductRow = {
+  id: string;
+  name: string;
+  telegram_link: string | null;
+  telegram_bot_token: string | null;
+};
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -23,13 +31,15 @@ export async function POST(request: NextRequest) {
 
   const supabase = await createClient();
 
-  // Read product — telegram_bot_token stays server-side and never goes to the browser
-  const { data: product, error: productError } = await supabase
+  // Read product — telegram_bot_token stays server-side and never goes to the browser.
+  // We cast to PostgrestSingleResponse<ProductRow> to bypass the typed query builder's
+  // partial-select inference which resolves to `never` under strict module resolution.
+  const { data: product, error: productError } = (await supabase
     .from("products")
     .select("id, name, telegram_link, telegram_bot_token")
     .eq("id", productId)
     .eq("active", true)
-    .single();
+    .single()) as unknown as PostgrestSingleResponse<ProductRow>;
 
   console.log("[checkout/complete] product query error:", productError?.message ?? "none");
   console.log("[checkout/complete] product found:", product ? "yes" : "no");
@@ -45,10 +55,10 @@ export async function POST(request: NextRequest) {
   // If the product has no Telegram config, mark paid and return early
   if (!product.telegram_bot_token || !product.telegram_link) {
     console.warn("[checkout/complete] No Telegram config on product — skipping invite");
-    await supabase
+    await (supabase
       .from("orders")
-      .update({ status: "paid" })
-      .eq("id", orderId);
+      .update({ status: "paid" } as unknown as never)
+      .eq("id", orderId));
 
     return NextResponse.json({ inviteLink: null });
   }
@@ -85,10 +95,10 @@ export async function POST(request: NextRequest) {
   }
 
   // Update order status to "paid"
-  const { error: updateError } = await supabase
+  const { error: updateError } = (await supabase
     .from("orders")
-    .update({ status: "paid" })
-    .eq("id", orderId);
+    .update({ status: "paid" } as unknown as never)
+    .eq("id", orderId)) as unknown as PostgrestSingleResponse<null>;
 
   if (updateError) {
     console.warn("[checkout/complete] order status update failed:", updateError.message);

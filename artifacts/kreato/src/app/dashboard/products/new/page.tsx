@@ -88,12 +88,12 @@ export default function NewProductPage() {
 
     const supabase = createClient();
     const { error: insertError } = await supabase.from("products").insert({
-      creator_id: userId,
+      creator_id: userId!,
       name: form.name.trim(),
       description: form.description.trim() || null,
       product_type: form.product_type,
       price: priceNum,
-      billing_type: form.billing_type,
+      billing_type: form.billing_type as "one_time" | "monthly",
       telegram_link:
         form.product_type === "Paid Community"
           ? form.telegram_link.trim() || null
