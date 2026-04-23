@@ -11,16 +11,6 @@
       "static/chunks/main-app.js",
       "static/chunks/app/page.js"
     ],
-    "/[handle]/not-found": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/[handle]/not-found.js"
-    ],
-    "/[handle]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/[handle]/page.js"
-    ],
     "/waitlist/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",

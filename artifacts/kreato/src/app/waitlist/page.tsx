@@ -70,9 +70,7 @@ export default function WaitlistPage() {
 
         {/* Headline */}
         <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 leading-[1.1] tracking-tight max-w-4xl mb-5">
-          The New Way For Creators In{" "}
-          <span className="text-violet-600 whitespace-nowrap">Malaysia &amp; Singapore</span>{" "}
-          To Make Money From Their Followers
+          The New Way For Creators To Make Money From Their Followers
         </h1>
 
         {/* Subtitle */}
