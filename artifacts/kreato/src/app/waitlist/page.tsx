@@ -94,7 +94,7 @@ export default function WaitlistPage() {
       </main>
 
       {/* ── Creator cards section ── */}
-      <section className="bg-gray-50 py-20 px-6 border-t border-gray-100">
+      <section className="bg-[#F5F5F5] py-20 px-6">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 text-center mb-3 tracking-tight">
             What creators are selling on Kreato
@@ -121,7 +121,7 @@ export default function WaitlistPage() {
       </section>
 
       {/* ── Built for SEA ── */}
-      <section className="py-20 px-6 border-t border-gray-100">
+      <section className="bg-white py-20 px-6">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 text-center mb-3 tracking-tight">
             Built for SEA
@@ -164,15 +164,15 @@ export default function WaitlistPage() {
       </section>
 
       {/* ── Bottom CTA ── */}
-      <section className="py-20 px-6 border-t border-gray-100">
+      <section className="bg-violet-600 py-20 px-6">
         <div className="max-w-xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight mb-3">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-3">
             Ready to make money from your followers?
           </h2>
-          <p className="text-gray-500 text-lg mb-10">
+          <p className="text-violet-200 text-lg mb-10">
             Join thousands of SEA creators already on the waitlist.
           </p>
-          <WaitlistForm buttonText="Get Early Access" />
+          <WaitlistForm buttonText="Get Early Access" dark />
         </div>
       </section>
 
@@ -200,7 +200,7 @@ export default function WaitlistPage() {
   );
 }
 
-function WaitlistForm({ buttonText }: { buttonText: string }) {
+function WaitlistForm({ buttonText, dark }: { buttonText: string; dark?: boolean }) {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
@@ -263,7 +263,11 @@ function WaitlistForm({ buttonText }: { buttonText: string }) {
         <button
           type="submit"
           disabled={submitting}
-          className="btn-primary px-6 py-2.5 text-sm whitespace-nowrap"
+          className={`px-6 py-2.5 text-sm whitespace-nowrap font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+            dark
+              ? "bg-white text-violet-600 hover:bg-violet-50"
+              : "btn-primary"
+          }`}
         >
           {submitting ? "Joining…" : buttonText}
         </button>

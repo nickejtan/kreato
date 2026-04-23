@@ -1127,6 +1127,10 @@ html {
 .bg-white\/80{
   background-color: rgb(255 255 255 / 0.8);
 }
+.bg-\[\#F5F5F5\]{
+  --tw-bg-opacity: 1;
+  background-color: rgb(245 245 245 / var(--tw-bg-opacity, 1));
+}
 .bg-gradient-to-br{
   background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
 }
@@ -1420,6 +1424,10 @@ html {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
 }
+.text-violet-200{
+  --tw-text-opacity: 1;
+  color: rgb(221 214 254 / var(--tw-text-opacity, 1));
+}
 .antialiased{
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -1498,6 +1506,11 @@ html {
   background-color: rgb(109 40 217 / var(--tw-bg-opacity, 1));
 }
 
+.hover\:bg-violet-50:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(245 243 255 / var(--tw-bg-opacity, 1));
+}
+
 .hover\:text-gray-600:hover{
   --tw-text-opacity: 1;
   color: rgb(75 85 99 / var(--tw-text-opacity, 1));
@@ -1536,6 +1549,14 @@ html {
 .hover\:shadow-gray-100:hover{
   --tw-shadow-color: #f3f4f6;
   --tw-shadow: var(--tw-shadow-colored);
+}
+
+.disabled\:cursor-not-allowed:disabled{
+  cursor: not-allowed;
+}
+
+.disabled\:opacity-50:disabled{
+  opacity: 0.5;
 }
 
 .group:hover .group-hover\:shadow-md{
