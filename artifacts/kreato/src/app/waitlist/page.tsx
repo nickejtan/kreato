@@ -120,6 +120,49 @@ export default function WaitlistPage() {
         </div>
       </section>
 
+      {/* ── Built for SEA ── */}
+      <section className="py-20 px-6 border-t border-gray-100">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 text-center mb-3 tracking-tight">
+            Built for SEA
+          </h2>
+          <p className="text-gray-500 text-center mb-12 max-w-xl mx-auto text-lg">
+            Everything you need to get paid by your followers — without the
+            Western platform headaches.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            {[
+              {
+                emoji: "💳",
+                title: "Local payments, built in",
+                desc: "Your followers pay with DuitNow, PayNow, GCash and every major SEA payment method. No Stripe needed.",
+              },
+              {
+                emoji: "⚡",
+                title: "Get paid instantly",
+                desc: "Money hits your account the moment someone buys. No waiting. No chasing.",
+              },
+              {
+                emoji: "🔒",
+                title: "Automatic access control",
+                desc: "Sell access to your Telegram group or exclusive content. Kreato handles everything automatically when someone pays.",
+              },
+            ].map((f) => (
+              <div key={f.title} className="card p-6">
+                <div className="text-2xl mb-3">{f.emoji}</div>
+                <h3 className="font-semibold text-gray-900 mb-1.5">
+                  {f.title}
+                </h3>
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  {f.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── Bottom CTA ── */}
       <section className="py-20 px-6 border-t border-gray-100">
         <div className="max-w-xl mx-auto text-center">
