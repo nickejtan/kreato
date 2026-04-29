@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import MetaPixelScript from "@/components/MetaPixelScript";
 
 const CREATOR_CARDS = [
   {
@@ -40,6 +41,7 @@ const CREATOR_CARDS = [
 export default function WaitlistPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
+      <MetaPixelScript />
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto w-full">
         <Link href="/" className="flex items-center gap-2">

@@ -1,8 +1,13 @@
 import Link from "next/link";
+import MetaPixelScript from "@/components/MetaPixelScript";
+import MetaPixelLead from "@/components/MetaPixelLead";
 
 export default function ThankYouPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 text-center">
+      <MetaPixelScript />
+      <MetaPixelLead />
+
       {/* Logo */}
       <Link href="/" className="flex items-center gap-2 mb-12">
         <div className="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center">
