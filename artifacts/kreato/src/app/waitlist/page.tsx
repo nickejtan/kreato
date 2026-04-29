@@ -240,32 +240,16 @@ function WaitlistForm({ buttonText, dark }: { buttonText: string; dark?: boolean
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full max-w-md mx-auto flex flex-col gap-3"
+      className="w-full max-w-[480px] mx-auto flex flex-col gap-3"
     >
-      {/* Row 1: email + button side by side */}
-      <div className="flex flex-col sm:flex-row gap-2.5">
-        <input
-          type="email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className={`${inputClass} flex-1`}
-        />
-        <button
-          type="submit"
-          disabled={submitting}
-          className={`px-6 py-2.5 text-sm font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap ${
-            dark
-              ? "bg-white text-violet-600 hover:bg-violet-50"
-              : "btn-primary"
-          }`}
-        >
-          {submitting ? "Joining…" : buttonText}
-        </button>
-      </div>
-
-      {/* Row 2: Instagram handle */}
+      <input
+        type="email"
+        placeholder="Enter your email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+        className={inputClass}
+      />
       <input
         type="text"
         placeholder="Instagram handle (e.g. @yourcreatorname)"
@@ -274,8 +258,6 @@ function WaitlistForm({ buttonText, dark }: { buttonText: string; dark?: boolean
         required
         className={inputClass}
       />
-
-      {/* Row 3: Country dropdown */}
       <select
         value={country}
         onChange={(e) => setCountry(e.target.value)}
@@ -286,7 +268,17 @@ function WaitlistForm({ buttonText, dark }: { buttonText: string; dark?: boolean
         <option value="Malaysia">🇲🇾 Malaysia</option>
         <option value="Singapore">🇸🇬 Singapore</option>
       </select>
-
+      <button
+        type="submit"
+        disabled={submitting}
+        className={`w-full px-6 py-2.5 text-sm font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+          dark
+            ? "bg-white text-violet-600 hover:bg-violet-50"
+            : "btn-primary"
+        }`}
+      >
+        {submitting ? "Joining…" : buttonText}
+      </button>
       {error && <p className="text-red-500 text-xs text-center">{error}</p>}
     </form>
   );
