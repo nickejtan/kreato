@@ -4,7 +4,7 @@ import { Resend } from "resend";
 import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const NOTIFY_EMAIL = "nick@agencyprofits.org";
+const NOTIFY_EMAIL = "nicholasetan@gmail.com";
 
 export async function POST(req: NextRequest) {
   let body: { email: string; instagram: string; country: string };
