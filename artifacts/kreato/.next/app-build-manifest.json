@@ -11,15 +11,15 @@
       "static/chunks/main-app.js",
       "static/chunks/app/page.js"
     ],
-    "/waitlist/page": [
+    "/[handle]/not-found": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/waitlist/page.js"
+      "static/chunks/app/[handle]/not-found.js"
     ],
-    "/thank-you/page": [
+    "/[handle]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/thank-you/page.js"
+      "static/chunks/app/[handle]/page.js"
     ]
   }
 }
