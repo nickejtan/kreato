@@ -60,11 +60,10 @@ export async function POST(req: NextRequest) {
         </table>
       `,
     });
+    console.log("[waitlist] Resend full response:", JSON.stringify({ data, error: emailErr }, null, 2));
     if (emailErr) {
-      console.error("[waitlist] Resend error:", JSON.stringify(emailErr));
       emailStatus = `resend_error: ${emailErr.message}`;
     } else {
-      console.log("[waitlist] Email sent, id:", data?.id);
       emailStatus = "sent";
     }
   } catch (emailErr) {
