@@ -184,7 +184,6 @@ function WaitlistForm({ buttonText, dark }: { buttonText: string; dark?: boolean
   const [instagram, setInstagram] = useState("");
   const [country, setCountry] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -210,19 +209,7 @@ function WaitlistForm({ buttonText, dark }: { buttonText: string; dark?: boolean
       return;
     }
 
-    setDone(true);
-  }
-
-  if (done) {
-    return (
-      <div className="flex flex-col items-center gap-3 py-4 w-full max-w-md mx-auto">
-        <div className="w-11 h-11 rounded-full bg-violet-50 flex items-center justify-center text-xl">🎉</div>
-        <p className="font-semibold text-gray-900 text-lg">You&apos;re on the list!</p>
-        <p className="text-gray-500 text-sm text-center">
-          We&apos;ll personally review your profile and reach out within 48 hours.
-        </p>
-      </div>
-    );
+    window.location.href = "/thank-you";
   }
 
   const inputClass = `w-full px-4 py-2.5 text-sm border rounded-lg outline-none transition-all ${
