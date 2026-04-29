@@ -13,18 +13,24 @@ export interface Database {
         Row: {
           id: string;
           email: string;
+          instagram: string | null;
+          country: string | null;
           role: "creator" | "buyer";
           created_at: string;
         };
         Insert: {
           id?: string;
           email: string;
+          instagram?: string | null;
+          country?: string | null;
           role?: "creator" | "buyer";
           created_at?: string;
         };
         Update: {
           id?: string;
           email?: string;
+          instagram?: string | null;
+          country?: string | null;
           role?: "creator" | "buyer";
           created_at?: string;
         };
