@@ -15,8 +15,20 @@ export default function ThankYouPage() {
       <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 tracking-tight mb-4">
         You&apos;re on the list!
       </h1>
-      <p className="text-lg text-gray-500 max-w-sm mb-10">
+      <p className="text-lg text-gray-500 max-w-sm mb-4">
         We&apos;ll personally review your profile and reach out within 48 hours.
+      </p>
+      <p className="text-sm text-gray-400 max-w-sm mb-10">
+        I&apos;ll be personally sliding into your DMs on Instagram — follow me at{" "}
+        <a
+          href="https://instagram.com/thenicketan"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-violet-600 hover:text-violet-700 font-medium transition-colors"
+        >
+          @thenicketan
+        </a>{" "}
+        so you don&apos;t miss it.
       </p>
       <Link
         href="/"
