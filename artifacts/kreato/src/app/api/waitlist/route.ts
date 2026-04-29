@@ -35,12 +35,13 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Send notification email (non-blocking — don't fail the request if email fails)
+  // Send notification email
+  let emailStatus: string = "not_attempted";
   try {
-    await resend.emails.send({
+    const { data, error: emailErr } = await resend.emails.send({
       from: "Kreato Waitlist <onboarding@resend.dev>",
       to: [NOTIFY_EMAIL],
-      subject: `New waitlist signup: @${instagram.replace(/^@/, "")}`,
+      subject: `New waitlist signup: @${instagram.trim().replace(/^@/, "")}`,
       html: `
         <h2>New Kreato waitlist signup</h2>
         <table cellpadding="8" style="border-collapse:collapse;font-family:sans-serif;font-size:15px;">
@@ -59,10 +60,18 @@ export async function POST(req: NextRequest) {
         </table>
       `,
     });
+    if (emailErr) {
+      console.error("[waitlist] Resend error:", JSON.stringify(emailErr));
+      emailStatus = `resend_error: ${emailErr.message}`;
+    } else {
+      console.log("[waitlist] Email sent, id:", data?.id);
+      emailStatus = "sent";
+    }
   } catch (emailErr) {
-    console.error("Notification email failed:", emailErr);
-    // Still return success — the signup was saved
+    const msg = emailErr instanceof Error ? emailErr.message : String(emailErr);
+    console.error("[waitlist] Email exception:", msg);
+    emailStatus = `exception: ${msg}`;
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, emailStatus });
 }
