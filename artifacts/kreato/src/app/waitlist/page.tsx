@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
 import MetaPixelScript from "@/components/MetaPixelScript";
+
 
 const CREATOR_CARDS = [
   {
@@ -193,20 +193,26 @@ function WaitlistForm({ buttonText, dark }: { buttonText: string; dark?: boolean
     setError(null);
     setSubmitting(true);
 
-    const supabase = createClient();
-    const { error: dbErr } = await supabase.from("waitlist").insert({
-      email: email.trim().toLowerCase(),
-      instagram: instagram.trim().replace(/^@/, "").toLowerCase(),
-      country: country,
-      role: "creator",
-    });
+    try {
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, instagram, country }),
+      });
 
-    if (dbErr) {
-      setError(
-        dbErr.code === "23505"
-          ? "You're already on the list!"
-          : dbErr.message
-      );
+      if (res.status === 409) {
+        setError("You're already on the list!");
+        setSubmitting(false);
+        return;
+      }
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error ?? "Something went wrong. Please try again.");
+        setSubmitting(false);
+        return;
+      }
+    } catch {
+      setError("Something went wrong. Please try again.");
       setSubmitting(false);
       return;
     }
