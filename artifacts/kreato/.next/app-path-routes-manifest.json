@@ -1,0 +1,16 @@
+{
+  "/_not-found/page": "/_not-found",
+  "/api/checkout/complete/route": "/api/checkout/complete",
+  "/api/waitlist/route": "/api/waitlist",
+  "/(auth)/signup/page": "/signup",
+  "/(auth)/login/page": "/login",
+  "/checkout/[productId]/page": "/checkout/[productId]",
+  "/[handle]/page": "/[handle]",
+  "/dashboard/products/new/page": "/dashboard/products/new",
+  "/dashboard/page": "/dashboard",
+  "/dashboard/settings/page": "/dashboard/settings",
+  "/onboarding/page": "/onboarding",
+  "/page": "/",
+  "/thank-you/page": "/thank-you",
+  "/waitlist/page": "/waitlist"
+}
