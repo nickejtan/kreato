@@ -193,12 +193,22 @@ function WaitlistForm({ buttonText, dark }: { buttonText: string; dark?: boolean
     setError(null);
     setSubmitting(true);
 
+    console.log("[waitlist-form] step 1: submit triggered", { email, instagram, country });
+
     try {
-      const res = await fetch("/api/waitlist", {
+      const url = "/api/waitlist";
+      console.log("[waitlist-form] step 2: fetching", url, "from origin:", window.location.origin);
+
+      const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, instagram, country }),
       });
+
+      console.log("[waitlist-form] step 3: response status:", res.status, "ok:", res.ok, "url:", res.url);
+
+      const responseText = await res.text();
+      console.log("[waitlist-form] step 4: response body:", responseText);
 
       if (res.status === 409) {
         setError("You're already on the list!");
@@ -206,17 +216,20 @@ function WaitlistForm({ buttonText, dark }: { buttonText: string; dark?: boolean
         return;
       }
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setError(data.error ?? "Something went wrong. Please try again.");
+        let parsed: { error?: string } = {};
+        try { parsed = JSON.parse(responseText); } catch {}
+        setError(parsed.error ?? "Something went wrong. Please try again.");
         setSubmitting(false);
         return;
       }
-    } catch {
+    } catch (err) {
+      console.error("[waitlist-form] step 3 EXCEPTION:", err);
       setError("Something went wrong. Please try again.");
       setSubmitting(false);
       return;
     }
 
+    console.log("[waitlist-form] step 5: redirecting to /thank-you");
     window.location.href = "/thank-you";
   }
 
