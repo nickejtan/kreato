@@ -66,6 +66,9 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Exclude static files, images, and ALL /api/* routes from the middleware.
+    // API routes handle their own auth — running Supabase session refresh in
+    // middleware on API routes can interfere with unauthenticated public endpoints.
+    "/((?!_next/static|_next/image|favicon.ico|api/.*|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

@@ -6,10 +6,20 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/thank-you/page": [
+    "/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/thank-you/page.js"
+      "static/chunks/app/page.js"
+    ],
+    "/[handle]/not-found": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/[handle]/not-found.js"
+    ],
+    "/[handle]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/[handle]/page.js"
     ],
     "/api/waitlist/route": [
       "static/chunks/webpack.js",
