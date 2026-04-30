@@ -2,15 +2,15 @@
   "/_not-found/page": "/_not-found",
   "/api/checkout/complete/route": "/api/checkout/complete",
   "/api/waitlist/route": "/api/waitlist",
-  "/(auth)/signup/page": "/signup",
   "/(auth)/login/page": "/login",
+  "/(auth)/signup/page": "/signup",
   "/[handle]/page": "/[handle]",
   "/dashboard/page": "/dashboard",
-  "/onboarding/page": "/onboarding",
-  "/page": "/",
-  "/dashboard/settings/page": "/dashboard/settings",
-  "/waitlist/page": "/waitlist",
   "/dashboard/products/new/page": "/dashboard/products/new",
+  "/page": "/",
   "/checkout/[productId]/page": "/checkout/[productId]",
-  "/thank-you/page": "/thank-you"
+  "/dashboard/settings/page": "/dashboard/settings",
+  "/thank-you/page": "/thank-you",
+  "/onboarding/page": "/onboarding",
+  "/waitlist/page": "/waitlist"
 }
