@@ -44,6 +44,12 @@ export interface Database {
           country: string;
           product_type: string;
           fdusd_wallet: string | null;
+          bio: string | null;
+          avatar_url: string | null;
+          instagram: string | null;
+          twitter: string | null;
+          tiktok: string | null;
+          youtube: string | null;
           created_at: string;
         };
         Insert: {
@@ -53,6 +59,12 @@ export interface Database {
           country: string;
           product_type: string;
           fdusd_wallet?: string | null;
+          bio?: string | null;
+          avatar_url?: string | null;
+          instagram?: string | null;
+          twitter?: string | null;
+          tiktok?: string | null;
+          youtube?: string | null;
           created_at?: string;
         };
         Update: {
@@ -62,6 +74,12 @@ export interface Database {
           country?: string;
           product_type?: string;
           fdusd_wallet?: string | null;
+          bio?: string | null;
+          avatar_url?: string | null;
+          instagram?: string | null;
+          twitter?: string | null;
+          tiktok?: string | null;
+          youtube?: string | null;
           created_at?: string;
         };
         Relationships: [];

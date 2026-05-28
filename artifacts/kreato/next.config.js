@@ -23,7 +23,11 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: "/((?!_next/static|_next/image|favicon.ico).*)",
+        // Match all routes except Next.js internals and static assets
+        source: "/:path*",
+        missing: [
+          { type: "header", key: "x-nextjs-data" },
+        ],
         headers: [
           {
             key: "Cache-Control",

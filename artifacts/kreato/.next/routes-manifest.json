@@ -14,7 +14,13 @@
   ],
   "headers": [
     {
-      "source": "/((?!_next/static|_next/image|favicon.ico).*)",
+      "source": "/:path*",
+      "missing": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ],
       "headers": [
         {
           "key": "Cache-Control",
@@ -29,7 +35,7 @@
           "value": "0"
         }
       ],
-      "regex": "^(?:/((?!_next/static|_next/image|favicon.ico).*))(?:/)?$"
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
     }
   ],
   "rewrites": {

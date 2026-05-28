@@ -2,15 +2,15 @@
   "/_not-found/page": "app/_not-found/page.js",
   "/api/checkout/complete/route": "app/api/checkout/complete/route.js",
   "/api/waitlist/route": "app/api/waitlist/route.js",
-  "/(auth)/login/page": "app/(auth)/login/page.js",
-  "/(auth)/signup/page": "app/(auth)/signup/page.js",
   "/[handle]/page": "app/[handle]/page.js",
+  "/(auth)/signup/page": "app/(auth)/signup/page.js",
+  "/(auth)/login/page": "app/(auth)/login/page.js",
   "/dashboard/page": "app/dashboard/page.js",
-  "/dashboard/products/new/page": "app/dashboard/products/new/page.js",
-  "/page": "app/page.js",
-  "/checkout/[productId]/page": "app/checkout/[productId]/page.js",
-  "/dashboard/settings/page": "app/dashboard/settings/page.js",
-  "/thank-you/page": "app/thank-you/page.js",
   "/onboarding/page": "app/onboarding/page.js",
-  "/waitlist/page": "app/waitlist/page.js"
+  "/dashboard/settings/page": "app/dashboard/settings/page.js",
+  "/page": "app/page.js",
+  "/thank-you/page": "app/thank-you/page.js",
+  "/waitlist/page": "app/waitlist/page.js",
+  "/checkout/[productId]/page": "app/checkout/[productId]/page.js",
+  "/dashboard/products/new/page": "app/dashboard/products/new/page.js"
 }
