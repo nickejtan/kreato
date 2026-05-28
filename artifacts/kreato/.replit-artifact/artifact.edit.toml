@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Kreato"
+version = "1.0.0"
+
+[[services]]
+localPort = 3000
+name = "Kreato"
+paths = ["/"]
+
+[services.development]
+run = "pnpm --filter @workspace/kreato run dev"
+
+[services.production]
+
+[services.production.build]
+args = ["pnpm", "--filter", "@workspace/kreato", "run", "build"]
+
+[services.production.build.env]
+NODE_ENV = "production"
+
+[services.production.run]
+args = ["pnpm", "--filter", "@workspace/kreato", "run", "start"]
+
+[services.production.run.env]
+PORT = "3000"
+NODE_ENV = "production"
