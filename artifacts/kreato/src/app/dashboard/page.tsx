@@ -250,6 +250,16 @@ export default function DashboardPage() {
                   >
                     {product.active ? "Active" : "Inactive"}
                   </span>
+
+                  {/* Edit course link */}
+                  {product.product_type === "Online Course" && (
+                    <Link
+                      href={`/dashboard/products/${product.id}/course`}
+                      className="flex-shrink-0 text-xs font-medium text-violet-600 hover:text-violet-700 px-2.5 py-1 rounded-full bg-violet-50 hover:bg-violet-100 transition-colors"
+                    >
+                      Edit course
+                    </Link>
+                  )}
                 </div>
               ))}
             </div>

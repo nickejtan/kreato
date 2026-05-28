@@ -111,6 +111,20 @@ export default function NewProductPage() {
       return;
     }
 
+    if (form.product_type === "Online Course") {
+      const { data: newProduct } = await supabase
+        .from("products")
+        .select("id")
+        .eq("creator_id", userId!)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+      if (newProduct) {
+        window.location.href = `/dashboard/products/${newProduct.id}/course`;
+        return;
+      }
+    }
+
     window.location.href = "/dashboard";
   }
 

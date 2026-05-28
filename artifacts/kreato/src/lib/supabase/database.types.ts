@@ -133,6 +133,83 @@ export interface Database {
           }
         ];
       };
+      course_sections: {
+        Row: {
+          id: string;
+          product_id: string;
+          title: string;
+          position: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          product_id: string;
+          title: string;
+          position: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          product_id?: string;
+          title?: string;
+          position?: number;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "course_sections_product_id_fkey";
+            columns: ["product_id"];
+            referencedRelation: "products";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      course_lessons: {
+        Row: {
+          id: string;
+          section_id: string;
+          product_id: string;
+          title: string;
+          content: string | null;
+          video_url: string | null;
+          position: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          section_id: string;
+          product_id: string;
+          title: string;
+          content?: string | null;
+          video_url?: string | null;
+          position: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          section_id?: string;
+          product_id?: string;
+          title?: string;
+          content?: string | null;
+          video_url?: string | null;
+          position?: number;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "course_lessons_section_id_fkey";
+            columns: ["section_id"];
+            referencedRelation: "course_sections";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "course_lessons_product_id_fkey";
+            columns: ["product_id"];
+            referencedRelation: "products";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       orders: {
         Row: {
           id: string;
