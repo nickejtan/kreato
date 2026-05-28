@@ -19,6 +19,7 @@ type ProductData = {
   product_type: string;
   price: number;
   billing_type: "one_time" | "monthly";
+  booking_url: string | null;
   creator: {
     id: string;
     full_name: string;
@@ -38,6 +39,7 @@ export default function CheckoutPage({ params }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [inviteLink, setInviteLink] = useState<string | null>(null);
+  const [completedOrderId, setCompletedOrderId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const [form, setForm] = useState({
@@ -62,7 +64,7 @@ export default function CheckoutPage({ params }: Props) {
       const { data, error } = await supabase
         .from("products")
         .select(
-          `id, name, description, product_type, price, billing_type,
+          `id, name, description, product_type, price, billing_type, booking_url,
            creator:creators (id, full_name, handle)`
         )
         .eq("id", productId!)
@@ -72,7 +74,6 @@ export default function CheckoutPage({ params }: Props) {
       if (error || !data) {
         setNotFound(true);
       } else {
-        // supabase returns creator as array for joins — unwrap
         const raw = data as unknown as {
           id: string;
           name: string;
@@ -80,6 +81,7 @@ export default function CheckoutPage({ params }: Props) {
           product_type: string;
           price: number;
           billing_type: "one_time" | "monthly";
+          booking_url: string | null;
           creator: { id: string; full_name: string; handle: string } | { id: string; full_name: string; handle: string }[];
         };
         const creator = Array.isArray(raw.creator) ? raw.creator[0] : raw.creator;
@@ -111,10 +113,6 @@ export default function CheckoutPage({ params }: Props) {
     const supabase = createClient();
 
     const cleanTelegram = form.buyer_telegram.trim().replace(/^@/, "");
-
-    // Generate the order ID client-side so we never need to SELECT the row back.
-    // Doing INSERT ... RETURNING with the anon key fails because the SELECT RLS
-    // policy (creators_view_own_orders) blocks unauthenticated reads.
     const orderId = crypto.randomUUID();
 
     const { error: insertError } = await supabase
@@ -139,9 +137,9 @@ export default function CheckoutPage({ params }: Props) {
     }
 
     console.log("[checkout] order inserted successfully, id:", orderId);
+    setCompletedOrderId(orderId);
 
-    // Call the server route to create the Telegram invite link.
-    // The bot token is fetched server-side and never sent to the browser.
+    // Call the server route to complete checkout (Telegram invite etc.)
     try {
       const res = await fetch("/api/checkout/complete", {
         method: "POST",
@@ -197,6 +195,10 @@ export default function CheckoutPage({ params }: Props) {
 
   // ── Success ──────────────────────────────────────────────
   if (success) {
+    const isDownload = product.product_type === "Digital Downloads";
+    const isCoaching = product.product_type === "Coaching";
+    const isCommunity = product.product_type === "Paid Community";
+
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 text-center">
         {/* Logo */}
@@ -218,38 +220,102 @@ export default function CheckoutPage({ params }: Props) {
           You&apos;re in! 🎉
         </h1>
 
-        {inviteLink ? (
+        {/* Digital Downloads */}
+        {isDownload && completedOrderId && (
           <>
-            <p className="text-gray-500 text-sm max-w-xs leading-relaxed mb-5">
-              Your one-time invite link is ready. Click it to join the group.
+            <p className="text-gray-500 text-sm max-w-xs leading-relaxed mb-6">
+              Your order is confirmed. Click below to download your file.
             </p>
             <a
-              href={inviteLink}
+              href={`/api/downloads/${completedOrderId}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm transition-colors mb-3"
             >
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
-              Join the Telegram group
+              Download your file
             </a>
             <p className="text-gray-400 text-xs max-w-xs mb-8">
-              ⚠️ This link is valid for <strong>24 hours</strong> and can only be used once.
-            </p>
-          </>
-        ) : (
-          <>
-            <p className="text-gray-500 text-sm max-w-xs leading-relaxed mb-2">
-              Your order is confirmed. The creator will send you a Telegram invite shortly.
-            </p>
-            <p className="text-gray-400 text-xs max-w-xs mb-8">
-              Check your Telegram from{" "}
-              <span className="font-medium text-gray-600">@{product.creator.handle}</span>.
+              Link expires in 1 hour. Save your file after downloading.
             </p>
           </>
         )}
 
+        {/* Coaching */}
+        {isCoaching && product.booking_url && (
+          <>
+            <p className="text-gray-500 text-sm max-w-xs leading-relaxed mb-6">
+              Your order is confirmed. Book your session with {product.creator.full_name} below.
+            </p>
+            <a
+              href={product.booking_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm transition-colors mb-8"
+            >
+              Book your session
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </a>
+          </>
+        )}
+
+        {isCoaching && !product.booking_url && (
+          <>
+            <p className="text-gray-500 text-sm max-w-xs leading-relaxed mb-8">
+              Your order is confirmed. {product.creator.full_name} will reach out to schedule your session.
+            </p>
+          </>
+        )}
+
+        {/* Paid Community — Telegram */}
+        {isCommunity && (
+          <>
+            {inviteLink ? (
+              <>
+                <p className="text-gray-500 text-sm max-w-xs leading-relaxed mb-5">
+                  Your one-time invite link is ready. Click it to join the group.
+                </p>
+                <a
+                  href={inviteLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm transition-colors mb-3"
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                  </svg>
+                  Join the Telegram group
+                </a>
+                <p className="text-gray-400 text-xs max-w-xs mb-8">
+                  ⚠️ This link is valid for <strong>24 hours</strong> and can only be used once.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-gray-500 text-sm max-w-xs leading-relaxed mb-2">
+                  Your order is confirmed. The creator will send you a Telegram invite shortly.
+                </p>
+                <p className="text-gray-400 text-xs max-w-xs mb-8">
+                  Check your Telegram from{" "}
+                  <span className="font-medium text-gray-600">@{product.creator.handle}</span>.
+                </p>
+              </>
+            )}
+          </>
+        )}
+
+        {/* Online Course — generic */}
+        {!isCommunity && !isDownload && !isCoaching && (
+          <p className="text-gray-500 text-sm max-w-xs leading-relaxed mb-8">
+            Your order is confirmed. {product.creator.full_name} will be in touch with next steps.
+          </p>
+        )}
+
+        {/* Order summary */}
         <div className="border border-gray-100 rounded-2xl p-5 max-w-xs w-full text-left mb-8">
           <p className="text-xs text-gray-400 mb-1">Order summary</p>
           <p className="font-semibold text-gray-900 text-sm">{product.name}</p>
@@ -271,6 +337,13 @@ export default function CheckoutPage({ params }: Props) {
   }
 
   // ── Checkout form ─────────────────────────────────────────
+  const formSubtitle: Record<string, string> = {
+    "Paid Community": `Fill in your details to join ${product.creator.full_name}'s community.`,
+    "Online Course": `Fill in your details to access ${product.creator.full_name}'s course.`,
+    "Digital Downloads": "Fill in your details to complete your purchase.",
+    "Coaching": `Fill in your details to book a session with ${product.creator.full_name}.`,
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -349,7 +422,7 @@ export default function CheckoutPage({ params }: Props) {
                 Complete your purchase
               </h1>
               <p className="text-sm text-gray-400 mb-7">
-                Fill in your details to join {product.creator.full_name}&apos;s community.
+                {formSubtitle[product.product_type] ?? `Fill in your details to complete your purchase.`}
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-5">
@@ -422,7 +495,7 @@ export default function CheckoutPage({ params }: Props) {
                     />
                   </div>
                   <p className="text-xs text-gray-400 mt-1.5">
-                    We&apos;ll use this to add you to the Telegram group.
+                    We&apos;ll use this to contact you about your order.
                   </p>
                 </div>
 

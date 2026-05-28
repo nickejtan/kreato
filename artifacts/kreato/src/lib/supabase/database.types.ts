@@ -95,6 +95,9 @@ export interface Database {
           billing_type: "one_time" | "monthly";
           telegram_link: string | null;
           telegram_bot_token: string | null;
+          file_url: string | null;
+          file_name: string | null;
+          booking_url: string | null;
           active: boolean;
           created_at: string;
         };
@@ -108,6 +111,9 @@ export interface Database {
           billing_type: "one_time" | "monthly";
           telegram_link?: string | null;
           telegram_bot_token?: string | null;
+          file_url?: string | null;
+          file_name?: string | null;
+          booking_url?: string | null;
           active?: boolean;
           created_at?: string;
         };
@@ -121,6 +127,9 @@ export interface Database {
           billing_type?: "one_time" | "monthly";
           telegram_link?: string | null;
           telegram_bot_token?: string | null;
+          file_url?: string | null;
+          file_name?: string | null;
+          booking_url?: string | null;
           active?: boolean;
           created_at?: string;
         };
