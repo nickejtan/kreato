@@ -30,6 +30,20 @@ export default function LoginPage() {
       return;
     }
 
+    // Check if user has completed Stripe Connect onboarding
+    if (data.session) {
+      const { data: creator } = await supabase
+        .from("creators")
+        .select("stripe_account_id")
+        .eq("id", data.session.user.id)
+        .single();
+
+      if (!creator?.stripe_account_id) {
+        window.location.href = "/stripe/onboarding";
+        return;
+      }
+    }
+
     window.location.href = "/dashboard";
   }
 

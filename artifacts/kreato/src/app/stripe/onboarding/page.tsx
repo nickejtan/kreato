@@ -4,30 +4,18 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function StripeOnboardingPage() {
-  const [status, setStatus] = useState("Confirming your account…");
+  const [status, setStatus] = useState("Setting up your payment account…");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function run() {
       const supabase = createClient();
-
-      // Wait briefly for PKCE code exchange to complete (detectSessionInUrl handles it)
-      let session = null;
-      for (let i = 0; i < 10; i++) {
-        const { data } = await supabase.auth.getSession();
-        if (data.session) {
-          session = data.session;
-          break;
-        }
-        await new Promise((r) => setTimeout(r, 500));
-      }
+      const { data: { session } } = await supabase.auth.getSession();
 
       if (!session) {
-        setError("Could not confirm your account. Please try logging in.");
+        window.location.href = "/login";
         return;
       }
-
-      setStatus("Setting up your payment account…");
 
       try {
         const res = await fetch("/api/stripe/create-connect-account", {
@@ -39,16 +27,13 @@ export default function StripeOnboardingPage() {
           }),
         });
 
-        if (!res.ok) {
-          throw new Error("Stripe account creation failed");
-        }
+        if (!res.ok) throw new Error("Failed to create Stripe account");
 
         const { url } = await res.json();
         setStatus("Redirecting to bank setup…");
         window.location.href = url;
       } catch {
-        // Stripe failed — still let them into the dashboard
-        window.location.href = "/dashboard";
+        setError("Something went wrong. Please try again.");
       }
     }
 
@@ -65,8 +50,8 @@ export default function StripeOnboardingPage() {
             </svg>
           </div>
           <p className="text-sm text-gray-600 mb-4">{error}</p>
-          <a href="/login" className="text-sm text-violet-600 font-medium hover:underline">
-            Go to login
+          <a href="/dashboard" className="text-sm text-violet-600 font-medium hover:underline">
+            Skip for now → go to dashboard
           </a>
         </div>
       </div>
