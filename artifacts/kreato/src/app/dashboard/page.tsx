@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import CreatePaymentLinkModal from "./CreatePaymentLinkModal";
 
 type Order = {
   id: string;
@@ -41,8 +42,10 @@ function fmtDate(iso: string) {
 export default function DashboardPage() {
   const [firstName, setFirstName] = useState("");
   const [businessName, setBusinessName] = useState("");
+  const [userId, setUserId] = useState("");
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -72,6 +75,7 @@ export default function DashboardPage() {
       const fullName: string = meta.full_name ?? creator.full_name ?? "";
       setFirstName(fullName.split(" ")[0] || fullName);
       setBusinessName(meta.business_name ?? "");
+      setUserId(session.user.id);
 
       // Load recent orders
       const { data: orderData } = await supabase
@@ -247,7 +251,10 @@ export default function DashboardPage() {
 
         {/* Quick actions */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <button className="flex items-center justify-center gap-2.5 px-6 py-5 rounded-2xl bg-violet-600 text-white font-semibold text-base hover:bg-violet-700 transition-colors shadow-lg shadow-violet-100">
+          <button
+            onClick={() => setShowPaymentModal(true)}
+            className="flex items-center justify-center gap-2.5 px-6 py-5 rounded-2xl bg-violet-600 text-white font-semibold text-base hover:bg-violet-700 transition-colors shadow-lg shadow-violet-100"
+          >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
@@ -325,6 +332,12 @@ export default function DashboardPage() {
           </div>
         </div>
       </main>
+
+      <CreatePaymentLinkModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        userId={userId}
+      />
     </div>
   );
 }

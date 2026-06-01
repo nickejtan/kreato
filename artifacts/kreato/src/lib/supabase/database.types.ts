@@ -87,6 +87,48 @@ export interface Database {
         };
         Relationships: [];
       };
+      payment_links: {
+        Row: {
+          id: string;
+          client_name: string;
+          client_email: string;
+          project_name: string;
+          amount: number;
+          description: string | null;
+          deposit_percentage: number | null;
+          due_date: string;
+          status: string;
+          created_by: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          client_name: string;
+          client_email: string;
+          project_name: string;
+          amount: number;
+          description?: string | null;
+          deposit_percentage?: number | null;
+          due_date: string;
+          status?: string;
+          created_by: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          client_name?: string;
+          client_email?: string;
+          project_name?: string;
+          amount?: number;
+          description?: string | null;
+          deposit_percentage?: number | null;
+          due_date?: string;
+          status?: string;
+          created_by?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       products: {
         Row: {
           id: string;
