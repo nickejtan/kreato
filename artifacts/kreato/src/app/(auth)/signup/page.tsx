@@ -211,22 +211,6 @@ export default function SignupPage() {
               </select>
             </div>
 
-            <div>
-              <label
-                htmlFor="country"
-                className="block text-sm font-medium text-gray-700 mb-1.5"
-              >
-                Country
-              </label>
-              <input
-                id="country"
-                type="text"
-                value="Malaysia"
-                disabled
-                className="input-field bg-gray-50 text-gray-400 cursor-not-allowed"
-              />
-            </div>
-
             {error && (
               <div className="rounded-lg bg-red-50 border border-red-100 px-3.5 py-3 text-sm text-red-600">
                 {error}
