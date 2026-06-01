@@ -765,6 +765,9 @@ html {
 .mt-8{
   margin-top: 2rem;
 }
+.mb-0\.5{
+  margin-bottom: 0.125rem;
+}
 .line-clamp-1{
   overflow: hidden;
   display: -webkit-box;
@@ -855,6 +858,9 @@ html {
 .h-full{
   height: 100%;
 }
+.h-px{
+  height: 1px;
+}
 .min-h-screen{
   min-height: 100vh;
 }
@@ -912,6 +918,9 @@ html {
 }
 .w-px{
   width: 1px;
+}
+.w-2{
+  width: 0.5rem;
 }
 .min-w-0{
   min-width: 0px;
@@ -1081,6 +1090,11 @@ html {
   margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
 }
+.space-y-2\.5 > :not([hidden]) ~ :not([hidden]){
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.625rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.625rem * var(--tw-space-y-reverse));
+}
 .divide-y > :not([hidden]) ~ :not([hidden]){
   --tw-divide-y-reverse: 0;
   border-top-width: calc(1px * calc(1 - var(--tw-divide-y-reverse)));
@@ -1118,6 +1132,9 @@ html {
 }
 .rounded-xl{
   border-radius: 0.75rem;
+}
+.rounded-md{
+  border-radius: 0.375rem;
 }
 .border{
   border-width: 1px;
@@ -1186,6 +1203,10 @@ html {
 }
 .border-white\/20{
   border-color: rgb(255 255 255 / 0.2);
+}
+.border-green-200{
+  --tw-border-opacity: 1;
+  border-color: rgb(187 247 208 / var(--tw-border-opacity, 1));
 }
 .border-t-transparent{
   border-top-color: transparent;
@@ -1271,6 +1292,21 @@ html {
 .bg-white\/90{
   background-color: rgb(255 255 255 / 0.9);
 }
+.bg-orange-400{
+  --tw-bg-opacity: 1;
+  background-color: rgb(251 146 60 / var(--tw-bg-opacity, 1));
+}
+.bg-red-400{
+  --tw-bg-opacity: 1;
+  background-color: rgb(248 113 113 / var(--tw-bg-opacity, 1));
+}
+.bg-white\/20{
+  background-color: rgb(255 255 255 / 0.2);
+}
+.bg-yellow-400{
+  --tw-bg-opacity: 1;
+  background-color: rgb(250 204 21 / var(--tw-bg-opacity, 1));
+}
 .bg-gradient-to-br{
   background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
 }
@@ -1314,6 +1350,9 @@ html {
 }
 .p-8{
   padding: 2rem;
+}
+.p-3{
+  padding: 0.75rem;
 }
 .px-2\.5{
   padding-left: 0.625rem;
@@ -1455,6 +1494,18 @@ html {
 }
 .pt-8{
   padding-top: 2rem;
+}
+.pb-3{
+  padding-bottom: 0.75rem;
+}
+.pb-4{
+  padding-bottom: 1rem;
+}
+.pt-4{
+  padding-top: 1rem;
+}
+.pt-5{
+  padding-top: 1.25rem;
 }
 .text-left{
   text-align: left;
