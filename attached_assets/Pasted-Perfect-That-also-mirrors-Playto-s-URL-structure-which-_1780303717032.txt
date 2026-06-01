@@ -1,0 +1,48 @@
+Perfect. That also mirrors Playto's URL structure which is smart.
+Here's the updated Replit Agent prompt. Copy and paste this exactly:
+
+"Create a brand new page at the route /agencies-freelancers. Do NOT touch, modify, or delete any existing pages, components, auth flow, dashboard, or database. This is a completely new standalone page added to the existing project.
+Keep the existing purple and white brand, Kreato logo, and fonts.
+PAGE ROUTE: /agencies-freelancers
+SECTION 1 — Nav
+Left: Kreato logo
+Right: Log in (text link) + Get started free (purple button)
+SECTION 2 — Hero
+Small badge above headline: Built for Malaysian freelancers and agencies
+Headline (large, bold): The payment platform built for Malaysian freelancers and agencies.
+Subheadline: Send professional payment links, collect via FPX, DuitNow, or card, and get automatic invoices — all in one place. Get paid in MYR directly to your Malaysian bank account.
+Primary CTA button (purple, large): Get started free
+Small text below button: No monthly fees. No setup fees. You only pay when you get paid.
+Below that, a horizontally scrolling strip of payment method labels styled as pill badges: FPX, DuitNow, Touch 'n Go, GrabPay, Visa, Mastercard, Boost, ShopeePay
+SECTION 3 — Pain points
+Headline: Still running your business like this?
+3 columns, each with an icon, title, and description:
+Column 1 — Title: Chasing payments over WhatsApp. Description: You send your bank account number in a chat and then wait. No confirmation, no invoice, no record.
+Column 2 — Title: Invoices that look unprofessional. Description: A screenshot of a bank transfer request doesn't make clients take you seriously or pay you on time.
+Column 3 — Title: No income proof for your bank. Description: When you apply for a loan, the bank asks for income records. You have none. Application rejected.
+SECTION 4 — Features
+Headline: Everything you need to get paid properly
+5 features in alternating left/right layout, each with a title, description, and placeholder graphic block:
+
+Professional payment links — Generate a payment link in seconds. Send it to your client over WhatsApp, email, or anywhere. They pay by FPX, DuitNow, Touch 'n Go, or card. You get paid in MYR directly to your bank.
+Automatic invoices — Every payment generates a proper invoice instantly. Invoice number, date, amount, service description, both parties' details. Stored permanently. No manual work.
+Automatic payment reminders — Kreato follows up with your clients automatically before the due date, on the due date, and after. You stop chasing. They start paying.
+Recurring billing — Put retainer clients on autopay. Set the amount and billing cycle once. Kreato collects every month automatically.
+Income documentation — Export a clean, formal income statement anytime. Use it for your bank loan application, your LHDN tax filing, or proof of income. Finally have the paperwork that proves what you earn.
+
+SECTION 5 — Pricing
+Headline: Simple, transparent pricing
+One centered pricing card with purple border:
+Large text: 5% + RM1.00
+Subtext: per transaction
+Below: No monthly fees. No setup fees. No hidden charges. You only pay when you get paid.
+CTA button (purple): Get started free
+SECTION 6 — Footer CTA
+Headline: Ready to get paid properly?
+Subtext: Join Malaysian freelancers and agencies who have stopped chasing payments and started running a real business.
+CTA button (purple): Get started free
+SECTION 7 — Footer
+Left: Kreato logo + tagline: The payment platform for Malaysian freelancers and agencies.
+Links: Privacy Policy, Terms of Service, Contact
+Bottom: © 2026 Kreato. All rights reserved.
+All CTA buttons on this page should link to the existing sign up page. Do not create a new sign up page. Do not modify any existing files."
