@@ -75,7 +75,7 @@ export default function DashboardPage() {
       ]);
 
       if (!creatorData) {
-        window.location.href = "/onboarding";
+        window.location.href = "/stripe/onboarding";
         return;
       }
 
