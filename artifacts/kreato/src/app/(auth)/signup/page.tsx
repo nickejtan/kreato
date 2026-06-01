@@ -26,6 +26,7 @@ export default function SignupPage() {
       email,
       password,
       options: {
+        emailRedirectTo: `${window.location.origin}/stripe/onboarding`,
         data: {
           full_name: name,
           business_name: businessName,

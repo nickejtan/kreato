@@ -146,6 +146,15 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../src/app/stripe/onboarding/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/stripe/onboarding">> = Specific
+  const handler = {} as typeof import("../../src/app/stripe/onboarding/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../src/app/stripe/refresh/page.tsx
 {
   type __IsExpected<Specific extends AppPageConfig<"/stripe/refresh">> = Specific
