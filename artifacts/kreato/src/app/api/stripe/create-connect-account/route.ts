@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-05-27.dahlia",
-});
+export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2026-05-27.dahlia",
+  });
+
   const { userId, email } = await request.json();
 
   if (!userId || !email) {
@@ -25,7 +27,6 @@ export async function POST(request: NextRequest) {
     serviceKey
   );
 
-  // Check if creator already has a Stripe account
   const { data: creator } = await supabase
     .from("creators")
     .select("stripe_account_id")
