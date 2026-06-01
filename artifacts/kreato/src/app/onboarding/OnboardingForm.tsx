@@ -94,6 +94,27 @@ export default function OnboardingForm({ userId, defaultName }: Props) {
       return;
     }
 
+    // Create Stripe Connect account and redirect to onboarding
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/stripe/create-connect-account", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          email: session?.user?.email ?? "",
+        }),
+      });
+
+      if (res.ok) {
+        const { url } = await res.json();
+        window.location.href = url;
+        return;
+      }
+    } catch {
+      // If Stripe setup fails, still let the user into the dashboard
+    }
+
     window.location.href = "/dashboard";
   }
 

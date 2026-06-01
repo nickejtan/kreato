@@ -50,6 +50,7 @@ export interface Database {
           twitter: string | null;
           tiktok: string | null;
           youtube: string | null;
+          stripe_account_id: string | null;
           created_at: string;
         };
         Insert: {
@@ -65,6 +66,7 @@ export interface Database {
           twitter?: string | null;
           tiktok?: string | null;
           youtube?: string | null;
+          stripe_account_id?: string | null;
           created_at?: string;
         };
         Update: {
@@ -80,6 +82,7 @@ export interface Database {
           twitter?: string | null;
           tiktok?: string | null;
           youtube?: string | null;
+          stripe_account_id?: string | null;
           created_at?: string;
         };
         Relationships: [];

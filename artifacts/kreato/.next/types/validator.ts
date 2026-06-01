@@ -146,6 +146,24 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../src/app/stripe/refresh/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/stripe/refresh">> = Specific
+  const handler = {} as typeof import("../../src/app/stripe/refresh/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../src/app/stripe/return/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/stripe/return">> = Specific
+  const handler = {} as typeof import("../../src/app/stripe/return/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../src/app/thank-you/page.tsx
 {
   type __IsExpected<Specific extends AppPageConfig<"/thank-you">> = Specific
@@ -177,6 +195,24 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/downloads/[orderId]">> = Specific
   const handler = {} as typeof import("../../src/app/api/downloads/[orderId]/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../src/app/api/stripe/create-connect-account/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/stripe/create-connect-account">> = Specific
+  const handler = {} as typeof import("../../src/app/api/stripe/create-connect-account/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../src/app/api/stripe/onboarding-link/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/stripe/onboarding-link">> = Specific
+  const handler = {} as typeof import("../../src/app/api/stripe/onboarding-link/route.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check
