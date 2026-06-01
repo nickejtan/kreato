@@ -4,10 +4,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
+const ROLES = ["Freelancer", "Digital Agency", "Consultant", "Other"];
+
 export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [businessName, setBusinessName] = useState("");
+  const [role, setRole] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -24,6 +28,9 @@ export default function SignupPage() {
       options: {
         data: {
           full_name: name,
+          business_name: businessName,
+          role,
+          country: "Malaysia",
         },
       },
     });
@@ -102,7 +109,7 @@ export default function SignupPage() {
             Create your account
           </h1>
           <p className="text-sm text-gray-500 mb-6">
-            Join thousands of SEA creators earning on Kreato
+            Get paid professionally. No more chasing clients.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -158,6 +165,65 @@ export default function SignupPage() {
                 required
                 minLength={8}
                 className="input-field"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="businessName"
+                className="block text-sm font-medium text-gray-700 mb-1.5"
+              >
+                Business name
+              </label>
+              <input
+                id="businessName"
+                type="text"
+                placeholder="Your business or freelance name"
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
+                required
+                className="input-field"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="role"
+                className="block text-sm font-medium text-gray-700 mb-1.5"
+              >
+                What best describes you?
+              </label>
+              <select
+                id="role"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                required
+                className="input-field"
+              >
+                <option value="" disabled>
+                  Select one
+                </option>
+                {ROLES.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label
+                htmlFor="country"
+                className="block text-sm font-medium text-gray-700 mb-1.5"
+              >
+                Country
+              </label>
+              <input
+                id="country"
+                type="text"
+                value="Malaysia"
+                disabled
+                className="input-field bg-gray-50 text-gray-400 cursor-not-allowed"
               />
             </div>
 
