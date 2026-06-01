@@ -1,6 +1,3 @@
 {
-  "/agencies-freelancers/page": "app/agencies-freelancers/page.js",
-  "/dashboard/page": "app/dashboard/page.js",
-  "/[handle]/page": "app/[handle]/page.js",
-  "/(auth)/login/page": "app/(auth)/login/page.js"
+  "/agencies-freelancers/page": "app/agencies-freelancers/page.js"
 }

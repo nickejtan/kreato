@@ -95,13 +95,13 @@ export default function DashboardPage() {
   }
 
   // Computed stats
+  const now = new Date();
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
   const totalCollected = orders
     .filter((o) => o.status === "paid")
     .reduce((s, o) => s + o.amount, 0);
 
-  const outstanding = orders.filter((o) => o.status === "pending").length;
-
-  const now = new Date();
   const paidThisMonth = orders
     .filter((o) => {
       const d = new Date(o.created_at);
@@ -112,6 +112,26 @@ export default function DashboardPage() {
       );
     })
     .reduce((s, o) => s + o.amount, 0);
+
+  // MRR — placeholder until recurring billing is tracked on orders
+  const mrr = 0;
+
+  const outstandingOrders = orders.filter((o) => o.status === "pending");
+  const outstandingCount = outstandingOrders.length;
+  const outstandingValue = outstandingOrders.reduce((s, o) => s + o.amount, 0);
+
+  // Overdue — placeholder until due_date is tracked on invoices
+  const overdueCount = 0;
+  const overdueValue = 0;
+
+  const activeClients = new Set(
+    orders
+      .filter(
+        (o) =>
+          o.status === "paid" && new Date(o.created_at) >= thirtyDaysAgo
+      )
+      .map((o) => o.buyer_name)
+  ).size;
 
   if (loading) {
     return (
@@ -179,26 +199,50 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Stats row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { label: "Total collected", value: fmt(totalCollected) },
-            { label: "Outstanding invoices", value: String(outstanding) },
-            { label: "Paid this month", value: fmt(paidThisMonth) },
-            { label: "Pending payouts", value: fmt(0) },
-          ].map((stat) => (
-            <div
-              key={stat.label}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
-            >
-              <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">
-                {stat.label}
-              </p>
-              <p className="text-2xl font-bold text-gray-900 tracking-tight">
-                {stat.value}
-              </p>
-            </div>
-          ))}
+        {/* Stats grid — 3 × 2 */}
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Total Collected */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Total collected</p>
+            <p className="text-2xl font-bold text-gray-900 tracking-tight">{fmt(totalCollected)}</p>
+          </div>
+
+          {/* Paid This Month */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Paid this month</p>
+            <p className="text-2xl font-bold text-gray-900 tracking-tight">{fmt(paidThisMonth)}</p>
+          </div>
+
+          {/* MRR */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">MRR</p>
+            <p className="text-2xl font-bold text-gray-900 tracking-tight">{fmt(mrr)}</p>
+          </div>
+
+          {/* Outstanding Invoices */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Outstanding invoices</p>
+            <p className="text-2xl font-bold text-gray-900 tracking-tight">{outstandingCount}</p>
+            {outstandingCount > 0 && (
+              <p className="text-sm text-gray-400 mt-1">{fmt(outstandingValue)}</p>
+            )}
+          </div>
+
+          {/* Overdue Invoices — red */}
+          <div className="bg-white rounded-2xl border border-red-100 shadow-sm p-6">
+            <p className="text-xs font-medium text-red-400 uppercase tracking-wide mb-2">Overdue invoices</p>
+            <p className="text-2xl font-bold text-red-600 tracking-tight">{overdueCount}</p>
+            {overdueCount > 0 && (
+              <p className="text-sm text-red-400 mt-1">{fmt(overdueValue)}</p>
+            )}
+          </div>
+
+          {/* Active Clients */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Active clients</p>
+            <p className="text-2xl font-bold text-gray-900 tracking-tight">{activeClients}</p>
+            <p className="text-sm text-gray-400 mt-1">last 30 days</p>
+          </div>
         </div>
 
         {/* Quick actions */}
