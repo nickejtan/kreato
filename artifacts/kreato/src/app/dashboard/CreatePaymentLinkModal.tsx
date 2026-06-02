@@ -17,6 +17,8 @@ type FormState = {
   description: string;
   depositRequired: boolean;
   depositPercentage: string;
+  isRecurring: boolean;
+  billingCycle: string;
   dueDate: string;
 };
 
@@ -28,6 +30,8 @@ const INITIAL_FORM: FormState = {
   description: "",
   depositRequired: false,
   depositPercentage: "50",
+  isRecurring: false,
+  billingCycle: "monthly",
   dueDate: "",
 };
 
@@ -81,6 +85,8 @@ export default function CreatePaymentLinkModal({ isOpen, onClose, userId }: Prop
           amount: amountNum,
           description: form.description.trim() || null,
           deposit_percentage: depositPct,
+          is_recurring: form.isRecurring,
+          billing_cycle: form.isRecurring ? form.billingCycle : null,
           due_date: form.dueDate,
           status: "pending",
           created_by: userId,
@@ -305,6 +311,44 @@ export default function CreatePaymentLinkModal({ isOpen, onClose, userId }: Prop
                       = RM {((parseFloat(form.amount) || 0) * (parseInt(form.depositPercentage, 10) || 0) / 100).toFixed(2)}
                     </p>
                   )}
+                </div>
+              )}
+            </div>
+
+            {/* Recurring payment toggle */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-700">Recurring payment?</p>
+                  <p className="text-xs text-gray-400 mt-0.5">This is a monthly retainer or recurring charge</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => set("isRecurring", !form.isRecurring)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 ${
+                    form.isRecurring ? "bg-violet-600" : "bg-gray-200"
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                      form.isRecurring ? "translate-x-6" : "translate-x-1"
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {form.isRecurring && (
+                <div className="bg-violet-50 rounded-xl px-4 py-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Billing cycle</label>
+                  <select
+                    value={form.billingCycle}
+                    onChange={(e) => set("billingCycle", e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-violet-200 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                  >
+                    <option value="monthly">Monthly</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="quarterly">Quarterly</option>
+                  </select>
                 </div>
               )}
             </div>

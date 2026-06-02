@@ -96,6 +96,8 @@ export interface Database {
           amount: number;
           description: string | null;
           deposit_percentage: number | null;
+          is_recurring: boolean;
+          billing_cycle: string | null;
           due_date: string;
           status: string;
           created_by: string;
@@ -109,6 +111,8 @@ export interface Database {
           amount: number;
           description?: string | null;
           deposit_percentage?: number | null;
+          is_recurring?: boolean;
+          billing_cycle?: string | null;
           due_date: string;
           status?: string;
           created_by: string;
@@ -122,6 +126,8 @@ export interface Database {
           amount?: number;
           description?: string | null;
           deposit_percentage?: number | null;
+          is_recurring?: boolean;
+          billing_cycle?: string | null;
           due_date?: string;
           status?: string;
           created_by?: string;
