@@ -135,6 +135,51 @@ export interface Database {
         };
         Relationships: [];
       };
+      transactions: {
+        Row: {
+          id: string;
+          payment_link_id: string;
+          stripe_session_id: string;
+          stripe_payment_intent_id: string | null;
+          amount: number;
+          fee: number;
+          net: number;
+          client_name: string;
+          client_email: string;
+          project_name: string;
+          created_by: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          payment_link_id: string;
+          stripe_session_id: string;
+          stripe_payment_intent_id?: string | null;
+          amount: number;
+          fee: number;
+          net: number;
+          client_name: string;
+          client_email: string;
+          project_name: string;
+          created_by: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          payment_link_id?: string;
+          stripe_session_id?: string;
+          stripe_payment_intent_id?: string | null;
+          amount?: number;
+          fee?: number;
+          net?: number;
+          client_name?: string;
+          client_email?: string;
+          project_name?: string;
+          created_by?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       products: {
         Row: {
           id: string;
