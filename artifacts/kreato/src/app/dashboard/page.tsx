@@ -5,26 +5,21 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import CreatePaymentLinkModal from "./CreatePaymentLinkModal";
 
-type Order = {
+type Transaction = {
   id: string;
-  buyer_name: string;
+  client_name: string;
+  project_name: string;
+  client_email: string;
   amount: number;
-  status: "pending" | "paid" | "failed" | "cancelled";
   created_at: string;
 };
 
-const STATUS_STYLES: Record<string, string> = {
-  paid: "bg-green-50 text-green-700 border-green-200",
-  pending: "bg-yellow-50 text-yellow-700 border-yellow-200",
-  failed: "bg-red-50 text-red-700 border-red-200",
-  cancelled: "bg-gray-50 text-gray-500 border-gray-200",
-};
-
-const STATUS_LABEL: Record<string, string> = {
-  paid: "Paid",
-  pending: "Pending",
-  failed: "Failed",
-  cancelled: "Cancelled",
+type PaymentLink = {
+  id: string;
+  amount: number;
+  status: string;
+  due_date: string;
+  is_recurring: boolean;
 };
 
 function fmt(amount: number) {
@@ -43,7 +38,8 @@ export default function DashboardPage() {
   const [firstName, setFirstName] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [userId, setUserId] = useState("");
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [paymentLinks, setPaymentLinks] = useState<PaymentLink[]>([]);
   const [loading, setLoading] = useState(true);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
@@ -77,15 +73,22 @@ export default function DashboardPage() {
       setBusinessName(meta.business_name ?? "");
       setUserId(session.user.id);
 
-      // Load recent orders
-      const { data: orderData } = await supabase
-        .from("orders")
-        .select("id, buyer_name, amount, status, created_at")
-        .eq("creator_id", session.user.id)
-        .order("created_at", { ascending: false })
-        .limit(20);
+      // Load transactions and payment_links in parallel
+      const [{ data: txData }, { data: plData }] = await Promise.all([
+        supabase
+          .from("transactions")
+          .select("id, client_name, client_email, project_name, amount, created_at")
+          .eq("created_by", session.user.id)
+          .order("created_at", { ascending: false })
+          .limit(200),
+        supabase
+          .from("payment_links")
+          .select("id, amount, status, due_date, is_recurring")
+          .eq("created_by", session.user.id),
+      ]);
 
-      setOrders((orderData as Order[]) ?? []);
+      setTransactions((txData as Transaction[]) ?? []);
+      setPaymentLinks((plData as PaymentLink[]) ?? []);
       setLoading(false);
     }
 
@@ -98,44 +101,44 @@ export default function DashboardPage() {
     window.location.href = "/login";
   }
 
-  // Computed stats
+  // ── Computed stats ──
   const now = new Date();
+  const todayStr = now.toISOString().split("T")[0];
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-  const totalCollected = orders
-    .filter((o) => o.status === "paid")
-    .reduce((s, o) => s + o.amount, 0);
+  const totalCollected = transactions.reduce((s, t) => s + t.amount, 0);
 
-  const paidThisMonth = orders
-    .filter((o) => {
-      const d = new Date(o.created_at);
-      return (
-        o.status === "paid" &&
-        d.getMonth() === now.getMonth() &&
-        d.getFullYear() === now.getFullYear()
-      );
+  const paidThisMonth = transactions
+    .filter((t) => {
+      const d = new Date(t.created_at);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
     })
-    .reduce((s, o) => s + o.amount, 0);
+    .reduce((s, t) => s + t.amount, 0);
 
-  // MRR — placeholder until recurring billing is tracked on orders
-  const mrr = 0;
+  const mrr = paymentLinks
+    .filter((pl) => pl.is_recurring && pl.status === "paid")
+    .reduce((s, pl) => s + pl.amount, 0);
 
-  const outstandingOrders = orders.filter((o) => o.status === "pending");
-  const outstandingCount = outstandingOrders.length;
-  const outstandingValue = outstandingOrders.reduce((s, o) => s + o.amount, 0);
+  const outstandingLinks = paymentLinks.filter(
+    (pl) => pl.status === "pending" && pl.due_date >= todayStr
+  );
+  const outstandingCount = outstandingLinks.length;
+  const outstandingValue = outstandingLinks.reduce((s, pl) => s + pl.amount, 0);
 
-  // Overdue — placeholder until due_date is tracked on invoices
-  const overdueCount = 0;
-  const overdueValue = 0;
+  const overdueLinks = paymentLinks.filter(
+    (pl) => pl.status === "pending" && pl.due_date < todayStr
+  );
+  const overdueCount = overdueLinks.length;
+  const overdueValue = overdueLinks.reduce((s, pl) => s + pl.amount, 0);
 
   const activeClients = new Set(
-    orders
-      .filter(
-        (o) =>
-          o.status === "paid" && new Date(o.created_at) >= thirtyDaysAgo
-      )
-      .map((o) => o.buyer_name)
+    transactions
+      .filter((t) => new Date(t.created_at) >= thirtyDaysAgo)
+      .map((t) => t.client_email)
   ).size;
+
+  // Recent activity — latest 20 transactions
+  const recentActivity = transactions.slice(0, 20);
 
   if (loading) {
     return (
@@ -151,7 +154,6 @@ export default function DashboardPage() {
       {/* ── Top Nav ── */}
       <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
-          {/* Logo */}
           <Link href="/dashboard" className="flex items-center gap-2 flex-shrink-0">
             <div className="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">K</span>
@@ -159,7 +161,6 @@ export default function DashboardPage() {
             <span className="font-bold text-gray-900 text-lg tracking-tight">Kreato</span>
           </Link>
 
-          {/* Center nav */}
           <div className="hidden sm:flex items-center gap-1">
             {[
               { label: "Dashboard", href: "/dashboard" },
@@ -177,7 +178,6 @@ export default function DashboardPage() {
             ))}
           </div>
 
-          {/* Right */}
           <div className="flex items-center gap-3 flex-shrink-0">
             <span className="text-sm font-medium text-gray-700 hidden sm:block">{firstName}</span>
             <button
@@ -205,25 +205,21 @@ export default function DashboardPage() {
 
         {/* Stats grid — 3 × 2 */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* Total Collected */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Total collected</p>
             <p className="text-2xl font-bold text-gray-900 tracking-tight">{fmt(totalCollected)}</p>
           </div>
 
-          {/* Paid This Month */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Paid this month</p>
             <p className="text-2xl font-bold text-gray-900 tracking-tight">{fmt(paidThisMonth)}</p>
           </div>
 
-          {/* MRR */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">MRR</p>
             <p className="text-2xl font-bold text-gray-900 tracking-tight">{fmt(mrr)}</p>
           </div>
 
-          {/* Outstanding Invoices */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Outstanding invoices</p>
             <p className="text-2xl font-bold text-gray-900 tracking-tight">{outstandingCount}</p>
@@ -232,7 +228,6 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* Overdue Invoices — red */}
           <div className="bg-white rounded-2xl border border-red-100 shadow-sm p-6">
             <p className="text-xs font-medium text-red-400 uppercase tracking-wide mb-2">Overdue invoices</p>
             <p className="text-2xl font-bold text-red-600 tracking-tight">{overdueCount}</p>
@@ -241,7 +236,6 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* Active Clients */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Active clients</p>
             <p className="text-2xl font-bold text-gray-900 tracking-tight">{activeClients}</p>
@@ -272,7 +266,7 @@ export default function DashboardPage() {
         <div>
           <h2 className="text-base font-semibold text-gray-900 mb-4">Recent activity</h2>
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            {orders.length === 0 ? (
+            {recentActivity.length === 0 ? (
               <div className="py-20 text-center">
                 <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg className="w-6 h-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -289,7 +283,7 @@ export default function DashboardPage() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-gray-100">
-                      {["Date", "Client", "Amount", "Status", "Action"].map((h) => (
+                      {["Date", "Client", "Project", "Amount", "Status"].map((h) => (
                         <th
                           key={h}
                           className="px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
@@ -300,28 +294,24 @@ export default function DashboardPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
-                    {orders.map((order) => (
-                      <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+                    {recentActivity.map((tx) => (
+                      <tr key={tx.id} className="hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                          {fmtDate(order.created_at)}
+                          {fmtDate(tx.created_at)}
                         </td>
-                        <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                          {order.buyer_name}
+                        <td className="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
+                          {tx.client_name}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-600">
+                          {tx.project_name}
                         </td>
                         <td className="px-6 py-4 text-sm font-semibold text-gray-900 whitespace-nowrap">
-                          {fmt(order.amount)}
+                          {fmt(tx.amount)}
                         </td>
                         <td className="px-6 py-4">
-                          <span
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${STATUS_STYLES[order.status] ?? STATUS_STYLES.pending}`}
-                          >
-                            {STATUS_LABEL[order.status] ?? order.status}
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-green-50 text-green-700 border-green-200">
+                            Paid
                           </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <button className="text-xs text-violet-600 font-medium hover:text-violet-800 transition-colors">
-                            View
-                          </button>
                         </td>
                       </tr>
                     ))}
