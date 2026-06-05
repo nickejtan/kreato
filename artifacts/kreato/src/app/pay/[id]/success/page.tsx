@@ -182,7 +182,7 @@ export default async function PaymentSuccessPage({
                 const pdfBytes = await generateInvoice({
                   transactionId: txData.id,
                   paymentDate: fmtDateLong(today),
-                  dueDate: link.due_date ? fmtDateLong(link.due_date) : "—",
+                  dueDate: link.due_date ? fmtDateLong(link.due_date) : "N/A",
                   freelancerName,
                   freelancerEmail,
                   clientName: link.client_name,

@@ -23,7 +23,7 @@ function fmtRM(amount: number): string {
 }
 
 function truncate(str: string, max: number): string {
-  return str.length > max ? str.slice(0, max - 1) + "…" : str;
+  return str.length > max ? str.slice(0, max - 1) + "..." : str;
 }
 
 export async function generateInvoice(data: InvoiceData): Promise<Uint8Array> {
@@ -138,7 +138,7 @@ export async function generateInvoice(data: InvoiceData): Promise<Uint8Array> {
   // ── Line: fee ──
   y -= 18;
   page.drawText("Kreato platform fee (5% + RM 1.00)", { x: col1, y, size: 9, font: regular, color: gray });
-  const feeStr = `−${fmtRM(data.feeAmount)}`;
+  const feeStr = `-${fmtRM(data.feeAmount)}`;
   page.drawText(feeStr, {
     x: width - 40 - regular.widthOfTextAtSize(feeStr, 9),
     y,
