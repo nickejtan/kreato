@@ -25,17 +25,31 @@ function fmtDateShort(iso: string) {
   });
 }
 
-async function sendEmail(payload: object) {
+async function sendEmail(label: string, payload: object) {
   const resendKey = process.env.RESEND_API_KEY;
-  if (!resendKey) return;
-  await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${resendKey}`,
-    },
-    body: JSON.stringify(payload),
-  });
+  if (!resendKey) {
+    console.error(`[invoice] ${label}: RESEND_API_KEY is not set — skipping`);
+    return;
+  }
+  console.log(`[invoice] ${label}: sending to Resend...`);
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${resendKey}`,
+      },
+      body: JSON.stringify(payload),
+    });
+    const body = await res.json();
+    if (res.ok) {
+      console.log(`[invoice] ${label}: sent OK — id=${(body as { id?: string }).id}`);
+    } else {
+      console.error(`[invoice] ${label}: Resend error ${res.status}:`, JSON.stringify(body));
+    }
+  } catch (err) {
+    console.error(`[invoice] ${label}: fetch threw:`, err);
+  }
 }
 
 export default async function PaymentSuccessPage({
@@ -125,40 +139,50 @@ export default async function PaymentSuccessPage({
 
             // ── 3. PDF + email (non-critical — errors logged but don't break page) ──
             if (txData?.id) {
+              console.log(`[invoice] Starting post-payment processing for tx=${txData.id}`);
               try {
                 // Get creator info
                 let freelancerName = "Freelancer";
                 let freelancerEmail = "";
 
                 try {
-                  const { data: creatorData } = await supabase
+                  console.log(`[invoice] Looking up creator id=${link.created_by}`);
+                  const { data: creatorData, error: creatorErr } = await supabase
                     .from("creators")
                     .select("full_name")
                     .eq("id", link.created_by)
                     .single();
+                  if (creatorErr) console.warn("[invoice] creators table lookup error:", creatorErr.message);
                   if (creatorData?.full_name) freelancerName = creatorData.full_name;
 
                   // Try admin API for email + business name (requires service role key)
                   if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
-                    const { data: adminData } = await supabase.auth.admin.getUserById(link.created_by);
+                    console.log("[invoice] Fetching creator auth record via admin API...");
+                    const { data: adminData, error: adminErr } = await supabase.auth.admin.getUserById(link.created_by);
+                    if (adminErr) console.warn("[invoice] auth.admin.getUserById error:", adminErr.message);
                     if (adminData?.user?.email) freelancerEmail = adminData.user.email;
                     if (adminData?.user?.user_metadata?.business_name) {
                       freelancerName = adminData.user.user_metadata.business_name;
                     } else if (adminData?.user?.user_metadata?.full_name) {
                       freelancerName = adminData.user.user_metadata.full_name;
                     }
+                  } else {
+                    console.warn("[invoice] SUPABASE_SERVICE_ROLE_KEY not set — cannot fetch creator email");
                   }
-                } catch {
-                  // Fall back to defaults
+                } catch (creatorLookupErr) {
+                  console.error("[invoice] Creator lookup threw:", creatorLookupErr);
                 }
+
+                console.log(`[invoice] Creator: name="${freelancerName}" email="${freelancerEmail || "(none)"}"`);
 
                 const today = new Date().toISOString().split("T")[0];
 
                 // ── Generate PDF ──
+                console.log("[invoice] Generating PDF...");
                 const pdfBytes = await generateInvoice({
                   transactionId: txData.id,
                   paymentDate: fmtDateLong(today),
-                  dueDate: fmtDateLong(link.due_date),
+                  dueDate: link.due_date ? fmtDateLong(link.due_date) : "—",
                   freelancerName,
                   freelancerEmail,
                   clientName: link.client_name,
@@ -169,21 +193,28 @@ export default async function PaymentSuccessPage({
                   feeAmount,
                   netAmount,
                 });
+                console.log(`[invoice] PDF generated — ${pdfBytes.length} bytes`);
 
                 const invoiceNumber = `INV-${txData.id.replace(/-/g, "").slice(0, 8).toUpperCase()}`;
                 const pdfFilename = `invoice-${invoiceNumber}.pdf`;
                 const base64Pdf = Buffer.from(pdfBytes).toString("base64");
 
                 // ── Upload to Supabase Storage ──
+                console.log(`[invoice] Uploading to storage: invoices/${txData.id}.pdf`);
                 try {
-                  await supabase.storage
+                  const { error: storageErr } = await supabase.storage
                     .from("invoices")
                     .upload(`${txData.id}.pdf`, pdfBytes, {
                       contentType: "application/pdf",
                       upsert: false,
                     });
-                } catch {
-                  // Storage might not be set up yet — continue
+                  if (storageErr) {
+                    console.warn("[invoice] Storage upload error:", storageErr.message);
+                  } else {
+                    console.log("[invoice] Storage upload OK");
+                  }
+                } catch (storageThrow) {
+                  console.warn("[invoice] Storage upload threw:", storageThrow);
                 }
 
                 const attachment = {
@@ -193,7 +224,7 @@ export default async function PaymentSuccessPage({
 
                 // ── Email 1: Freelancer ──
                 if (freelancerEmail) {
-                  await sendEmail({
+                  await sendEmail("freelancer-email", {
                     from: "Kreato <onboarding@resend.dev>",
                     to: [freelancerEmail],
                     subject: `Payment received — ${link.project_name}`,
@@ -246,7 +277,7 @@ export default async function PaymentSuccessPage({
                 }
 
                 // ── Email 2: Client ──
-                await sendEmail({
+                await sendEmail("client-email", {
                   from: "Kreato <onboarding@resend.dev>",
                   to: [link.client_email],
                   subject: `Your receipt — ${link.project_name}`,
