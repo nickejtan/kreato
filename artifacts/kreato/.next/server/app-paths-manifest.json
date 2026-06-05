@@ -1,3 +1,4 @@
 {
-  "/agencies-freelancers/page": "app/agencies-freelancers/page.js"
+  "/agencies-freelancers/page": "app/agencies-freelancers/page.js",
+  "/page": "app/page.js"
 }
